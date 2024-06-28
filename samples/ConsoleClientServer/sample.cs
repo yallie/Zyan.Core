@@ -47,10 +47,18 @@ public struct Program
             Console.Title = "Client " + DateTime.Now.TimeOfDay.Seconds;
             Console.WriteLine("Created connection to server.");
 
+            conn.Connect();
+            Console.WriteLine("Connected to server. Creating proxies...");
+
             var config = conn.CreateProxy<IConfigurationServer>();
+            Console.WriteLine("Created a proxy. Press ENTER to call its method...");
+            Console.ReadLine();
+
             Console.WriteLine("Calling configuration server. Config name: {0}", config.GetConfigName());
 
             var proxy = conn.CreateProxy<IActionServer>();
+            Console.WriteLine("Created a second proxy. Calling its method...");
+
             Console.WriteLine("Calling action server. Executed: {0} -> {1}", "Hello", proxy.ExecuteAction("Hello"));
         }
     }

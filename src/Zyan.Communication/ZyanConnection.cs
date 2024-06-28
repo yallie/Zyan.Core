@@ -19,16 +19,24 @@ namespace Zyan.Communication
         /// Initializes a new instance of the <see cref="ZyanConnection"/> class.
         /// </summary>
         public ZyanConnection(ClientConfig config = null)
-        { 
-            ClientConfig = config ?? new ClientConfig();
-            ClientConfig.Serializer = new BinarySerializerAdapter();
+        {
+            ClientConfig = config ?? new ClientConfig
+            {
+                ServerPort = new ServerConfig().NetworkPort,
+            };
+
+            ClientConfig.Serializer = ClientConfig.Serializer ?? new BinarySerializerAdapter();
             RemotingClient = new RemotingClient(ClientConfig);
 
             // automatically initialize the connection
             var nop = ConnectAsNeeded = () => { };
             ConnectAsNeeded = () =>
             {
-                RemotingClient.Connect();
+                if (!RemotingClient.IsConnected)
+                {
+                    RemotingClient.Connect();
+                }
+
                 ConnectAsNeeded = nop;
             };
         }

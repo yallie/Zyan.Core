@@ -26,14 +26,15 @@ namespace Zyan.Communication
         {
             ServerConfig = config ?? new ServerConfig();
             ServerConfig.Serializer = ServerConfig.Serializer ?? new BinarySerializerAdapter();
-            ServerConfig.DependencyInjectionContainer = new DryIocAdapter();
+            //ServerConfig.DependencyInjectionContainer = new DryIocAdapter();
 
+            // looks like it's called in the constructor :(
             var registerAction = ServerConfig.RegisterServicesAction;
             ServerConfig.RegisterServicesAction = c =>
             {
                 registerAction?.Invoke(c);
                 foreach (var reg in Registrations)
-                { 
+                {
                     reg.Invoke(c);
                 }
             };
