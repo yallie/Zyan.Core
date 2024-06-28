@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Protocols\" />
+    <PackageReference Include="CoreRemoting" Version="1.2.0" />
+    <PackageReference Include="DryIoc.dll" Version="5.4.3" />
+    <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
   </ItemGroup>
 
 </Project>

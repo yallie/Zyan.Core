@@ -1,4 +1,6 @@
 ﻿using System;
+using CoreRemoting;
+using CoreRemoting.Serialization.Binary;
 
 namespace Zyan.Communication
 {
@@ -7,19 +9,50 @@ namespace Zyan.Communication
     /// </summary>
     public class ZyanConnection : IDisposable
     {
+        private ClientConfig ClientConfig { get; set; }
+
+        private RemotingClient RemotingClient { get; set; }
+
+        private Action ConnectAsNeeded { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyanConnection"/> class.
+        /// </summary>
+        public ZyanConnection(ClientConfig config = null)
+        { 
+            ClientConfig = config ?? new ClientConfig();
+            ClientConfig.Serializer = new BinarySerializerAdapter();
+            RemotingClient = new RemotingClient(ClientConfig);
+
+            // automatically initialize the connection
+            var nop = ConnectAsNeeded = () => { };
+            ConnectAsNeeded = () =>
+            {
+                RemotingClient.Connect();
+                ConnectAsNeeded = nop;
+            };
+        }
+
+        /// <summary>
+        /// Connects to the remote server.
+        /// </summary>
+        public void Connect() => RemotingClient.Connect();
+
         /// <summary>
         /// Release managed resources.
         /// </summary>
-        public void Dispose()
-        {
-        }
+        public void Dispose() => RemotingClient.Dispose();
 
         /// <summary>
         /// Creates a local proxy object of a specified remote component.
         /// </summary>
         /// <typeparam name="T">Remote component interface type</typeparam>
         /// <returns>Proxy</returns>
-        public T CreateProxy<T>() => CreateProxy<T>(null);
+        public T CreateProxy<T>()
+        {
+            ConnectAsNeeded();
+            return RemotingClient.CreateProxy<T>();
+        }
 
         /// <summary>
         /// Creates a local proxy object of a specified remote component.
@@ -29,7 +62,8 @@ namespace Zyan.Communication
         /// <returns>Proxy</returns>
         public T CreateProxy<T>(string uniqueName)
         {
-            throw new NotImplementedException();
+            ConnectAsNeeded();
+            return RemotingClient.CreateProxy<T>(uniqueName);
         }
     }
 }

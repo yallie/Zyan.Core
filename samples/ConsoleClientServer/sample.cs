@@ -8,7 +8,7 @@
 using System;
 using Zyan.Communication;
 
-struct Program
+public struct Program
 {
     static void Main()
     {
@@ -45,7 +45,7 @@ struct Program
         using (var conn = new ZyanConnection())
         {
             Console.Title = "Client " + DateTime.Now.TimeOfDay.Seconds;
-            Console.WriteLine("Connected to server.");
+            Console.WriteLine("Created connection to server.");
 
             var config = conn.CreateProxy<IConfigurationServer>();
             Console.WriteLine("Calling configuration server. Config name: {0}", config.GetConfigName());
@@ -61,8 +61,8 @@ struct Program
     {
         using (var host = new ZyanComponentHost())
         {
-            host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.SingleCall);
-            host.RegisterComponent<IActionServer, ActionServer>(ActivationType.SingleCall);
+            host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.Singleton);
+            host.RegisterComponent<IActionServer, ActionServer>();
             host.Start();
 
             Console.Title = "Server";
