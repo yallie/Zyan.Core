@@ -9,36 +9,23 @@ namespace Zyan.Communication
     /// </summary>
     public class ZyanConnection : IDisposable
     {
-        private ClientConfig ClientConfig { get; set; }
+        private ZyanConnectionConfig Config { get; set; }
 
         private RemotingClient RemotingClient { get; set; }
-
-        private Action ConnectAsNeeded { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyanConnection"/> class.
         /// </summary>
-        public ZyanConnection(ClientConfig config = null)
+        public ZyanConnection(ZyanConnectionConfig config = null)
         {
-            ClientConfig = config ?? new ClientConfig
+            Config = config ?? new ZyanConnectionConfig();
+            Config.Serializer = Config.Serializer ?? new BinarySerializerAdapter();
+
+            RemotingClient = new RemotingClient(Config);
+            if (Config.AutoConnect)
             {
-                ServerPort = new ServerConfig().NetworkPort,
-            };
-
-            ClientConfig.Serializer = ClientConfig.Serializer ?? new BinarySerializerAdapter();
-            RemotingClient = new RemotingClient(ClientConfig);
-
-            // automatically initialize the connection
-            var nop = ConnectAsNeeded = () => { };
-            ConnectAsNeeded = () =>
-            {
-                if (!RemotingClient.IsConnected)
-                {
-                    RemotingClient.Connect();
-                }
-
-                ConnectAsNeeded = nop;
-            };
+                RemotingClient.Connect();
+            }
         }
 
         /// <summary>
@@ -56,11 +43,8 @@ namespace Zyan.Communication
         /// </summary>
         /// <typeparam name="T">Remote component interface type</typeparam>
         /// <returns>Proxy</returns>
-        public T CreateProxy<T>()
-        {
-            ConnectAsNeeded();
-            return RemotingClient.CreateProxy<T>();
-        }
+        public T CreateProxy<T>() =>
+            RemotingClient.CreateProxy<T>();
 
         /// <summary>
         /// Creates a local proxy object of a specified remote component.
@@ -68,10 +52,14 @@ namespace Zyan.Communication
         /// <typeparam name="T">Remote component interface type</typeparam>
         /// <param name="uniqueName">Unique component name</param>
         /// <returns>Proxy</returns>
-        public T CreateProxy<T>(string uniqueName)
-        {
-            ConnectAsNeeded();
-            return RemotingClient.CreateProxy<T>(uniqueName);
-        }
+        public T CreateProxy<T>(string uniqueName) =>
+            RemotingClient.CreateProxy<T>(uniqueName);
+
+        /// <summary>
+        /// Shut down the proxy and disconnect its event handlers from server.
+        /// </summary>
+        /// <param name="proxy">Proxy to disconnect.</param>
+        public void ShutdownProxy(object proxy) =>
+            RemotingClient.ShutdownProxy(proxy);
     }
 }

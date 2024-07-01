@@ -11,7 +11,7 @@ namespace Zyan.Communication
     /// </summary>
     public class ZyanComponentHost : IDisposable
     {
-        private ServerConfig ServerConfig { get; set; }
+        private ZyanComponentHostConfig Config { get; set; }
 
         private RemotingServer RemotingServer { get; set; }
 
@@ -21,17 +21,21 @@ namespace Zyan.Communication
         /// Initializes a new instance of the <see cref="ZyanComponentHost" /> class.
         /// </summary>
         /// <param name="config">Remoting configuration, optional</param>
-        public ZyanComponentHost(ServerConfig config = null)
+        public ZyanComponentHost(ZyanComponentHostConfig config = null)
         {
-            ServerConfig = config ?? new ServerConfig();
-            ServerConfig.Serializer = ServerConfig.Serializer ?? new BinarySerializerAdapter();
+            Config = config ?? new ZyanComponentHostConfig();
+            Config.Serializer = Config.Serializer ?? new BinarySerializerAdapter();
 
             // make sure we're using the scoped container
-            ServerConfig.DependencyInjectionContainer = DiContainer =
-                (ServerConfig.DependencyInjectionContainer as IScopedContainer) ??
-                new DryIocAdapter();
+            Config.DependencyInjectionContainer = DiContainer =
+                Config.DependencyInjectionContainer ?? new DryIocAdapter();
 
-            RemotingServer = new RemotingServer(ServerConfig);
+            // start up the server as specified in the config
+            RemotingServer = new RemotingServer(Config);
+            if (Config.AutoStart)
+            {
+                RemotingServer.Start();
+            }
         }
 
         /// <summary>
@@ -56,12 +60,13 @@ namespace Zyan.Communication
         /// <typeparam name="TInterface">Component interface type</typeparam>
         /// <typeparam name="TService">Component implementation type</typeparam>
         /// <param name="lifetime">Optional component lifetime</param>
-        public void RegisterComponent<TInterface, TService>(ActivationType lifetime = ActivationType.SingleCall, string uniqueName = "")
+        public ZyanComponentHost RegisterComponent<TInterface, TService>(ActivationType lifetime = ActivationType.SingleCall, string uniqueName = "")
             where TInterface : class
             where TService : class, TInterface, new()
         {
             var serviceLifetime = lifetime == ActivationType.SingleCall ? ServiceLifetime.SingleCall : ServiceLifetime.Singleton;
             DiContainer.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
+            return this;
         }
     }
 }
