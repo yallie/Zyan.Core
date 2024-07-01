@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
-using NUnit.Framework;
+using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
+using TestFixture = System.SerializableAttribute;
+using Test = Xunit.FactAttribute;
 
 namespace Zyan.Tests
 {
@@ -32,7 +34,7 @@ namespace Zyan.Tests
             {
                 var proxy = conn.CreateProxy<IHelloServer>();
                 var result = proxy.Hello("Hello");
-                Assert.That(result, Is.EqualTo("Hello World!"));
+                Assert.Equal("Hello World!", result);
             }
         }
 
@@ -44,7 +46,7 @@ namespace Zyan.Tests
             {
                 var proxy = conn.CreateProxy<IHelloServer>();
                 var result = await proxy.HelloAsync("Hello");
-                Assert.That(result, Is.EqualTo("Hello World!"));
+                Assert.Equal("Hello World!", result);
             }
         }
     }
