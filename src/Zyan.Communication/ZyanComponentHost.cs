@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using CoreRemoting;
 using CoreRemoting.DependencyInjection;
 using CoreRemoting.Serialization.Binary;
+using Zyan.Communication.DependencyInjection;
 
 namespace Zyan.Communication
 {
@@ -15,8 +15,7 @@ namespace Zyan.Communication
 
         private RemotingServer RemotingServer { get; set; }
 
-        private List<Action<IDependencyInjectionContainer>> Registrations { get; set; } =
-            new List<Action<IDependencyInjectionContainer>>();
+        private IScopedContainer DiContainer { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyanComponentHost" /> class.
@@ -26,18 +25,11 @@ namespace Zyan.Communication
         {
             ServerConfig = config ?? new ServerConfig();
             ServerConfig.Serializer = ServerConfig.Serializer ?? new BinarySerializerAdapter();
-            //ServerConfig.DependencyInjectionContainer = new DryIocAdapter();
 
-            // looks like it's called in the constructor :(
-            var registerAction = ServerConfig.RegisterServicesAction;
-            ServerConfig.RegisterServicesAction = c =>
-            {
-                registerAction?.Invoke(c);
-                foreach (var reg in Registrations)
-                {
-                    reg.Invoke(c);
-                }
-            };
+            // make sure we're using the scoped container
+            ServerConfig.DependencyInjectionContainer = DiContainer =
+                (ServerConfig.DependencyInjectionContainer as IScopedContainer) ??
+                new DryIocAdapter();
 
             RemotingServer = new RemotingServer(ServerConfig);
         }
@@ -69,7 +61,7 @@ namespace Zyan.Communication
             where TService : class, TInterface, new()
         {
             var serviceLifetime = lifetime == ActivationType.SingleCall ? ServiceLifetime.SingleCall : ServiceLifetime.Singleton;
-            Registrations.Add(c => c.RegisterService<TInterface, TService>(serviceLifetime, uniqueName));
+            DiContainer.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
         }
     }
 }
