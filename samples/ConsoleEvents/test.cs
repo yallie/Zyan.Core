@@ -8,9 +8,7 @@
 //
 
 using System;
-using System.Collections.Concurrent;
 using Zyan.Communication;
-using Zyan.Communication.Protocols.Tcp;
 
 class CanceledSubscriptionTest
 {
@@ -30,14 +28,14 @@ class CanceledSubscriptionTest
 
 	static void StartServer()
 	{
-		var proto = new TcpDuplexServerProtocolSetup(4321);
+		// using default tcp protocol and default port
 
-		using (var host = new ZyanComponentHost(nameof(CanceledSubscriptionTest), proto))
+		using (var host = new ZyanComponentHost())
 		{
 			host.RegisterComponent<IService, Service>();
-			host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
+			//host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
 
-			Console.Title = "Server " + proto.TcpPort;
+			Console.Title = "Server " + host.Config.NetworkPort;
 			Console.WriteLine("Server started. Press ENTER to quit.");
 			Console.ReadLine();
 		}
@@ -83,10 +81,9 @@ class CanceledSubscriptionTest
 
 	static void StartClient()
 	{
-		var proto = new TcpDuplexClientProtocolSetup();
-		var url = proto.FormatUrl("localhost", 4321, nameof(CanceledSubscriptionTest));
+		// using default protocol, host name and port
 
-		using (var conn = new ZyanConnection(url))
+		using (var conn = new ZyanConnection())
 		{
 			var handler = new EventHandler((s, e) =>
 				Console.WriteLine("This code was called by server!"));

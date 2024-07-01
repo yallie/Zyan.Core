@@ -11,7 +11,7 @@ namespace Zyan.Communication
     /// </summary>
     public class ZyanComponentHost : IDisposable
     {
-        private ZyanComponentHostConfig Config { get; set; }
+        public ZyanComponentHostConfig Config { get; private set; }
 
         private RemotingServer RemotingServer { get; set; }
 

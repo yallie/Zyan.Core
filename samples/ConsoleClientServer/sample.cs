@@ -6,6 +6,7 @@
 // Second run — starts client.
 
 using System;
+using System.Diagnostics;
 using Zyan.Communication;
 
 public struct Program
@@ -42,11 +43,13 @@ public struct Program
         // host defaults to localhost
         // port defaults to CoreRemoting's default port
         Console.Title = "Client " + DateTime.Now.TimeOfDay.Seconds;
-        Console.WriteLine("Creating connection to server...");
+        Console.WriteLine("Server already running. Creating connection...");
+        var sw = Stopwatch.StartNew();
 
         using (var conn = new ZyanConnection())
         {
-            Console.WriteLine("Connected to server. Creating proxies...");
+            Console.WriteLine($"Connected to server: took {sw.Elapsed.TotalSeconds} seconds to connect.");
+            Console.WriteLine("Creating proxies...");
 
             var config = conn.CreateProxy<IConfigurationServer>();
             Console.WriteLine("Created the first proxy. Calling its method...");
@@ -62,13 +65,16 @@ public struct Program
 
     static void RunServer()
     {
+        var sw = Stopwatch.StartNew();
+
         using (var host = new ZyanComponentHost())
         {
             host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.Singleton);
             host.RegisterComponent<IActionServer, ActionServer>();
 
             Console.Title = "Server";
-            Console.WriteLine("Server started. Press ENTER to quit.");
+            Console.WriteLine($"Server started. Took {sw.Elapsed.TotalSeconds} seconds to start.");
+            Console.WriteLine("Press ENTER to quit.");
             Console.ReadLine();
         }
     }

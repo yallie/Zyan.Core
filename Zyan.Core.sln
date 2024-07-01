@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F736
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zyan.Samples.ConsoleClientServer", "samples\ConsoleClientServer\Zyan.Samples.ConsoleClientServer.csproj", "{BBC56E04-B02A-4697-8163-BE8B32A6EC15}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zyan.Samples.ConsoleEvents", "samples\ConsoleEvents\Zyan.Samples.ConsoleEvents.csproj", "{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,12 +31,17 @@ Global
 		{BBC56E04-B02A-4697-8163-BE8B32A6EC15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBC56E04-B02A-4697-8163-BE8B32A6EC15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBC56E04-B02A-4697-8163-BE8B32A6EC15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BBC56E04-B02A-4697-8163-BE8B32A6EC15} = {F7362458-2CAE-4075-A91F-F8C9E933BC6E}
+		{DCFDBB02-CAF8-4B91-BB96-EC2B53B40965} = {F7362458-2CAE-4075-A91F-F8C9E933BC6E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19D03D15-863C-4166-B76A-627D4E3B01CA}
