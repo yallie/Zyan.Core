@@ -30,7 +30,6 @@ public class CanceledSubscriptionTest
 	static void StartServer()
 	{
 		// using default tcp protocol and default port
-
 		using (var host = new ZyanComponentHost())
 		{
 			host.RegisterComponent<IService, Service>();
@@ -46,10 +45,7 @@ public class CanceledSubscriptionTest
 	{
 		public event EventHandler MyEvent;
 
-		private Guid ClientID
-		{
-			get => Guid.Empty; // { return ServerSession.CurrentSession.SessionID; }
-		}
+		private Guid ClientID => ServerSession.CurrentSession.SessionID;
 
 		public void OnMyEvent()
 		{
@@ -83,7 +79,6 @@ public class CanceledSubscriptionTest
 	static void StartClient()
 	{
 		// using default protocol, host name and port
-
 		using (var conn = new ZyanConnection())
 		{
 			var handler = new EventHandler((s, e) =>
