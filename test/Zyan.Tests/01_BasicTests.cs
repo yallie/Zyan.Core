@@ -8,24 +8,8 @@ using Test = Xunit.FactAttribute;
 namespace Zyan.Tests
 {
     [TestFixture]
-    public class BasicTests
+    public class BasicTests : TestBase
     {
-        private const int TestPort = 9092;
-
-        private ZyanComponentHostConfig HostConfig { get; } = new ZyanComponentHostConfig
-        {
-            NetworkPort = TestPort,
-        };
-
-        private ZyanConnectionConfig ConnConfig { get; } = new ZyanConnectionConfig
-        {
-            ServerPort = TestPort,
-            AuthenticationTimeout = 5,
-            ConnectionTimeout = 5,
-            InvocationTimeout = 5,
-            SendTimeout = 5,
-        };
-
         [Test]
         public void SyncRpcTest()
         {

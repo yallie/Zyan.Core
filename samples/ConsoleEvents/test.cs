@@ -13,94 +13,94 @@ using Zyan.Communication;
 // CastleCore can only implement public interfaces
 public class CanceledSubscriptionTest
 {
-	static void Main()
-	{
-		try
-		{
-			StartServer();
-		}
-		catch
-		{
-			StartClient();
-		}
-	}
+    static void Main()
+    {
+        try
+        {
+            StartServer();
+        }
+        catch
+        {
+            StartClient();
+        }
+    }
 
-	// ------------ Server code --------------
+    // ------------ Server code --------------
 
-	static void StartServer()
-	{
-		// using default tcp protocol and default port
-		using (var host = new ZyanComponentHost())
-		{
-			host.RegisterComponent<IService, Service>();
-			//host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
+    static void StartServer()
+    {
+        // using default tcp protocol and default port
+        using (var host = new ZyanComponentHost())
+        {
+            host.RegisterComponent<IService, Service>();
+            //host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
 
-			Console.Title = "Server " + host.Config.NetworkPort;
-			Console.WriteLine($"Server started using tcp port {host.Config.NetworkPort}. Press ENTER to quit.");
-			Console.ReadLine();
-		}
-	}
+            Console.Title = "Server " + host.Config.NetworkPort;
+            Console.WriteLine($"Server started using tcp port {host.Config.NetworkPort}. Press ENTER to quit.");
+            Console.ReadLine();
+        }
+    }
 
-	public class Service : IService
-	{
-		public event EventHandler MyEvent;
+    public class Service : IService
+    {
+        public event EventHandler MyEvent;
 
-		private Guid ClientID => ServerSession.CurrentSession.SessionID;
+        private Guid ClientID => ServerSession.CurrentSession.SessionID;
 
-		public void OnMyEvent()
-		{
-			Console.WriteLine("Client {0} invoked the event.", ClientID);
-			MyEvent?.Invoke(null, EventArgs.Empty);
-		}
+        public void OnMyEvent()
+        {
+            Console.WriteLine("Client {0} invoked the event.", ClientID);
+            MyEvent?.Invoke(null, EventArgs.Empty);
+        }
 
-		public void StressTest(int count)
-		{
-			Console.WriteLine("Client {0} invoked the event {1} times.", ClientID, count);
-			for (var i = 0; i < count; i++)
-			{
-				MyEvent?.Invoke(null, EventArgs.Empty);
-			}
-		}
-	}
+        public void StressTest(int count)
+        {
+            Console.WriteLine("Client {0} invoked the event {1} times.", ClientID, count);
+            for (var i = 0; i < count; i++)
+            {
+                MyEvent?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
 
-	// ------------ Shared code --------------
+    // ------------ Shared code --------------
 
-	public interface IService
-	{
-		event EventHandler MyEvent;
+    public interface IService
+    {
+        event EventHandler MyEvent;
 
-		void OnMyEvent();
+        void OnMyEvent();
 
-		void StressTest(int count);
-	}
+        void StressTest(int count);
+    }
 
-	// ------------ Client code --------------
+    // ------------ Client code --------------
 
-	static void StartClient()
-	{
-		// using default protocol, host name and port
-		using (var conn = new ZyanConnection())
-		{
-			var handler = new EventHandler((s, e) =>
-				Console.WriteLine("This code was called by server!"));
+    static void StartClient()
+    {
+        // using default protocol, host name and port
+        using (var conn = new ZyanConnection())
+        {
+            var handler = new EventHandler((s, e) =>
+                Console.WriteLine("This code was called by server!"));
 
-			var proxy = conn.CreateProxy<IService>();
-			proxy.MyEvent += handler;
+            var proxy = conn.CreateProxy<IService>();
+            proxy.MyEvent += handler;
 
-			Console.Title = "Client " + DateTime.Now.TimeOfDay.Seconds;
-			Console.WriteLine("Client started. Hit ENTER to test single event, '1000' to stress test, ^C to quit.");
-			while (true)
-			{
-				var command = Console.ReadLine();
-				var count = 0;
-				if (int.TryParse(command, out count))
-				{
-					proxy.StressTest(count);
-					continue;
-				}
+            Console.Title = "Client " + DateTime.Now.TimeOfDay.Seconds;
+            Console.WriteLine("Client started. Hit ENTER to test single event, '1000' to stress test, ^C to quit.");
+            while (true)
+            {
+                var command = Console.ReadLine();
+                var count = 0;
+                if (int.TryParse(command, out count))
+                {
+                    proxy.StressTest(count);
+                    continue;
+                }
 
-				proxy.OnMyEvent();
-			}
-		}
-	}
+                proxy.OnMyEvent();
+            }
+        }
+    }
 }

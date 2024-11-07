@@ -81,17 +81,12 @@ public struct Program
 
     internal class ConfigurationServer : IConfigurationServer
     {
-        public string GetConfigName()
-        {
-            return "SampleConfig";
-        }
+        public string GetConfigName() => "SampleConfig";
     }
 
     internal class ActionServer : IActionServer
     {
-        public string ExecuteAction(string hello)
-        {
-            return hello + " World";
-        }
+        public string ExecuteAction(string hello) =>
+            hello + " World";
     }
 }
