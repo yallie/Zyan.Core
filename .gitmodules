@@ -1,0 +1,3 @@
+[submodule "modules/CoreRemoting"]
+	path = modules/CoreRemoting
+	url = https://github.com/yallie/CoreRemoting.git

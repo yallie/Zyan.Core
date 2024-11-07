@@ -6,10 +6,17 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!--ItemGroup>
     <PackageReference Include="CoreRemoting" Version="1.2.0" />
+  </ItemGroup-->
+
+  <ItemGroup>
     <PackageReference Include="DryIoc.dll" Version="5.4.3" />
     <PackageReference Include="DryIoc.MefAttributedModel.dll" Version="7.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\modules\CoreRemoting\CoreRemoting\CoreRemoting.csproj" />
   </ItemGroup>
 
 </Project>

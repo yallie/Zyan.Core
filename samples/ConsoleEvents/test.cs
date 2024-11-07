@@ -10,7 +10,8 @@
 using System;
 using Zyan.Communication;
 
-class CanceledSubscriptionTest
+// CastleCore can only implement public interfaces
+public class CanceledSubscriptionTest
 {
 	static void Main()
 	{
@@ -36,7 +37,7 @@ class CanceledSubscriptionTest
 			//host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
 
 			Console.Title = "Server " + host.Config.NetworkPort;
-			Console.WriteLine("Server started. Press ENTER to quit.");
+			Console.WriteLine($"Server started using tcp port {host.Config.NetworkPort}. Press ENTER to quit.");
 			Console.ReadLine();
 		}
 	}
@@ -47,7 +48,7 @@ class CanceledSubscriptionTest
 
 		private Guid ClientID
 		{
-			get { return ServerSession.CurrentSession.SessionID; }
+			get => Guid.Empty; // { return ServerSession.CurrentSession.SessionID; }
 		}
 
 		public void OnMyEvent()
