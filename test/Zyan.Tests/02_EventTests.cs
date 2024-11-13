@@ -11,8 +11,6 @@ namespace Zyan.Tests
     [TestFixture]
     public class EventTests : TestBase
     {
-        protected override int TestPort => 9093;
-
         [Test]
         public async Task SyncSelfEvent()
         {
