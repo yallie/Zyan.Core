@@ -34,6 +34,11 @@ namespace Zyan.Communication
         public void Connect() => RemotingClient.Connect();
 
         /// <summary>
+        /// Disconnects from the remote server.
+        /// </summary>
+        public void Disconnect(bool quiet = false) => RemotingClient.Disconnect(quiet);
+
+        /// <summary>
         /// Release managed resources.
         /// </summary>
         public void Dispose() => RemotingClient.Dispose();

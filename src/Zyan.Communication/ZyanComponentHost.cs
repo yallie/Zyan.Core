@@ -43,7 +43,6 @@ namespace Zyan.Communication
         /// </summary>
         public void Start() => RemotingServer.Start();
 
-
         /// <summary>
         /// Stops listening for incoming messages.
         /// </summary>
@@ -52,7 +51,7 @@ namespace Zyan.Communication
         /// <summary>
         /// Releases all managed resources.
         /// </summary>
-        public void Dispose() => Stop();
+        public void Dispose() => Dispose();
 
         /// <summary>
         /// Registers a component in the component catalog.
