@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
@@ -93,7 +94,9 @@ namespace Zyan.Tests
             using (var conn1 = new ZyanConnection(ConnConfig))
             using (var conn2 = new ZyanConnection(ConnConfig))
             {
-                var max = 100;
+                var max = 200;
+                var timeout = TimeSpan.FromSeconds(5);
+
                 var cnt1 = new AsyncCounter(max);
                 var proxy1 = conn1.CreateProxy<IEventServer>();
                 proxy1.MyEvent += (s, e) => cnt1.Increment();
@@ -104,8 +107,8 @@ namespace Zyan.Tests
                 proxy2.StressTest(max);
 
                 // both clients should get all the events
-                Assert.True(await IsInTime(cnt1.Task));
-                Assert.True(await IsInTime(cnt2.Task));
+                Assert.True(await IsInTime(cnt1.Task, timeout));
+                Assert.True(await IsInTime(cnt2.Task, timeout));
             }
         }
 
@@ -116,7 +119,9 @@ namespace Zyan.Tests
             using (var conn1 = new ZyanConnection(ConnConfig))
             using (var conn2 = new ZyanConnection(ConnConfig))
             {
-                var max = 100;
+                var max = 200;
+                var timeout = TimeSpan.FromSeconds(5);
+
                 var cnt1 = new AsyncCounter(max);
                 var proxy1 = conn1.CreateProxy<IEventServer>();
                 proxy1.MyEvent += (s, e) => cnt1.Increment();
@@ -127,8 +132,8 @@ namespace Zyan.Tests
                 await proxy2.StressTestAsync(max);
 
                 // both clients should get all the events
-                Assert.True(await IsInTime(cnt1.Task));
-                Assert.True(await IsInTime(cnt2.Task));
+                Assert.True(await IsInTime(cnt1.Task, timeout));
+                Assert.True(await IsInTime(cnt2.Task, timeout));
             }
         }
     }

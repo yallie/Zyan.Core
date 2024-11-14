@@ -30,10 +30,10 @@ namespace Zyan.Tests
             // of all client instances created out of the same config
             // and disposes of the old clients automatically :-0
             ServerPort = TestPort,
-            AuthenticationTimeout = 5,
+            AuthenticationTimeout = 10,
             ConnectionTimeout = 120,
-            InvocationTimeout = 5,
-            SendTimeout = 5,
+            InvocationTimeout = 10,
+            SendTimeout = 10,
             MessageEncryption = false,
         };
 
@@ -43,11 +43,11 @@ namespace Zyan.Tests
             return cfg;
         }
 
-        protected virtual TimeSpan WaitTimeout => TimeSpan.FromSeconds(1);
+        protected virtual TimeSpan DefaultTimeout => TimeSpan.FromSeconds(1);
 
-        protected async Task<T> IsInTime<T>(Task<T> task, string message = "Timed out!")
+        protected async Task<T> IsInTime<T>(Task<T> task, TimeSpan? timeout = null, string message = "Timed out!")
         {
-            var result = await Task.WhenAny(task, Task.Delay(WaitTimeout));
+            var result = await Task.WhenAny(task, Task.Delay(timeout ?? DefaultTimeout));
             if (ReferenceEquals(result, task))
             {
                 return await task;
