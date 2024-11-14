@@ -51,7 +51,7 @@ namespace Zyan.Communication
         /// <summary>
         /// Releases all managed resources.
         /// </summary>
-        public void Dispose() => Dispose();
+        public void Dispose() => RemotingServer.Dispose();
 
         /// <summary>
         /// Registers a component in the component catalog.

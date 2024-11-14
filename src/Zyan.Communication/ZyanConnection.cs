@@ -41,7 +41,14 @@ namespace Zyan.Communication
         /// <summary>
         /// Release managed resources.
         /// </summary>
-        public void Dispose() => RemotingClient.Dispose();
+        public void Dispose()
+        {
+            RemotingClient.Dispose();
+
+            // work around the race condition in WatsonTcp's
+            // client disconnection ClientManager.AddClientKicked(guid)
+            System.Threading.Thread.Sleep(1);
+        }
 
         /// <summary>
         /// Creates a local proxy object of a specified remote component.

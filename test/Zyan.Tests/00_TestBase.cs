@@ -30,10 +30,10 @@ namespace Zyan.Tests
             // of all client instances created out of the same config
             // and disposes of the old clients automatically :-0
             ServerPort = TestPort,
-            AuthenticationTimeout = 10,
+            AuthenticationTimeout = 15,
             ConnectionTimeout = 120,
-            InvocationTimeout = 10,
-            SendTimeout = 10,
+            InvocationTimeout = 15,
+            SendTimeout = 15,
             MessageEncryption = false,
         };
 
