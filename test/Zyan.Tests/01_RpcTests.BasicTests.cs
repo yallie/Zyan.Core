@@ -2,14 +2,12 @@
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
-using TestFixture = System.SerializableAttribute;
 using Test = Xunit.FactAttribute;
 using System;
 
 namespace Zyan.Tests
 {
-    [TestFixture]
-    public class BasicTests : TestBase
+    public partial class RpcTests : TestBase
     {
         [Test]
         public void SyncRpcTest()

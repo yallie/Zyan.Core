@@ -2,7 +2,7 @@
 
 namespace Zyan.Tests
 {
-    public class EncryptedEventTests : EventTests
+    public class RpcTests_EncryptedTests : RpcTests
     {
         protected override ZyanComponentHostConfig HostConfig =>
             Set(base.HostConfig, c => c.MessageEncryption = true);

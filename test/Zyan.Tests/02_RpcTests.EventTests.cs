@@ -4,12 +4,10 @@ using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
 using Test = Xunit.FactAttribute;
-using TestFixture = System.SerializableAttribute;
 
 namespace Zyan.Tests
 {
-    [TestFixture]
-    public class EventTests : TestBase
+    public partial class RpcTests : TestBase
     {
         [Test]
         public async Task SyncSelfEvent()
