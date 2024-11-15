@@ -1,0 +1,24 @@
+﻿An incomplete TODO list for Zyan.Core port:
+
++ RPC hello world
++ RPC with events
++ Message encryption on/off
+- Session management
+- Session variables
+- Delegate parameters https://gist.github.com/yallie/d39a2e81106dc5572f1e2b5f519510eb
+- Stream parameters (if possible) https://gist.github.com/yallie/7767323
+— DryIoc server side support: server call scope
+- Server-side MEF component registration
+— SRP authorization
+— LINQ-provider, client-side LINQ, GetTable<T>
+— LINQ expression parameters
+— Client-side MEF catalog
+— Method call interception and caching
+- Disconnected and Reconnected events https://gist.github.com/yallie/437ea4c087725693e1c2
+- Cancelling scheduled events on session termination
+- Authorization with password change
+- Two-factor authoruzation
+- FormatUrl API for client protocol
+— Look for more real appserver use cases
+
+Y [2024-11-15]

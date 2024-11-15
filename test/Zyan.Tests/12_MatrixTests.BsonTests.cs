@@ -3,7 +3,7 @@ using Zyan.Communication;
 
 namespace Zyan.Tests
 {
-    public class RpcTests_BsonTests : RpcTests
+    public class MatrixTests_BsonTests : RpcTests
     {
         protected override ZyanComponentHostConfig HostConfig =>
             Set(base.HostConfig, c => c.Serializer = new BsonSerializerAdapter());
