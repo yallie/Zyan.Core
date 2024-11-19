@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using DryIoc;
 
 namespace Zyan.Tests.Tools
 {
@@ -10,6 +12,13 @@ namespace Zyan.Tests.Tools
         {
             await Task.Delay(1);
             return Hello(hello);
+        }
+        public void Error(string msg) => throw new Exception(msg);
+
+        public async Task ErrorAsync(string msg)
+        {
+            await Task.Delay(1);
+            Error(msg);
         }
     }
 }

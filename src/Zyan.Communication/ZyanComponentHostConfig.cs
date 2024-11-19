@@ -1,4 +1,5 @@
 ﻿using CoreRemoting;
+using CoreRemoting.DependencyInjection;
 using Zyan.Communication.DependencyInjection;
 
 namespace Zyan.Communication
@@ -14,12 +15,23 @@ namespace Zyan.Communication
         public bool AutoStart { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the dependency container.
+        /// Gets or sets the dependency injection container to be used for service registration.
+        /// DryIoc Container is used, if set to null.
         /// </summary>
-        public new IScopedContainer DependencyInjectionContainer
+        public override IDependencyInjectionContainer DependencyInjectionContainer
         {
-            get => base.DependencyInjectionContainer as IScopedContainer;
-            set => base.DependencyInjectionContainer = value;
+            get => base.DependencyInjectionContainer;
+            set => base.DependencyInjectionContainer = ScopedContainerHelper.Get(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the scoped dependency injection container.
+        /// DryIoc Container is used, if set to null.
+        /// </summary>
+        public IScopedContainer ScopedContainer
+        {
+            get => DependencyInjectionContainer as IScopedContainer;
+            set => DependencyInjectionContainer = value;
         }
     }
 }

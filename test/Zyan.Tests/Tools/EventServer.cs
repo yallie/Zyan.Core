@@ -12,8 +12,16 @@ namespace Zyan.Tests.Tools
 
         public void OnMyEvent()
         {
-            Console.WriteLine("Client {0} invoked the event (sync).", ClientID);
-            MyEvent?.Invoke(null, EventArgs.Empty);
+            try
+            {
+                Console.WriteLine("Client {0} invoked the event (sync).", ClientID);
+                MyEvent?.Invoke(null, EventArgs.Empty);
+            }
+            catch
+            {
+                Console.WriteLine("Exception caught!");
+                throw;
+            }
         }
 
         public async Task OnMyEventAsync()

@@ -7,5 +7,9 @@ namespace Zyan.Tests.Tools
         string Hello(string hello);
 
         Task<string> HelloAsync(string hello);
+
+        void Error(string msg);
+
+        Task ErrorAsync(string msg);
     }
 }

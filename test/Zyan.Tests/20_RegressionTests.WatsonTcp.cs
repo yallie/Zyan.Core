@@ -7,7 +7,7 @@ using Test = Xunit.FactAttribute;
 
 namespace Zyan.Tests
 {
-    public class RegressionTests : TestBase
+    public partial class RegressionTests : TestBase
     {
         // [Test] // FAILS: throws either TaskCanceledException or ArgumentException
         // saying "An item of the same key has already been added

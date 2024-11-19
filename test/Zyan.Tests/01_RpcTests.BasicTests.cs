@@ -4,6 +4,8 @@ using Zyan.Communication;
 using Zyan.Tests.Tools;
 using Test = Xunit.FactAttribute;
 using System;
+using CoreRemoting;
+using CoreRemoting.Serialization;
 
 namespace Zyan.Tests
 {
@@ -30,6 +32,36 @@ namespace Zyan.Tests
                 var proxy = conn.CreateProxy<IHelloServer>();
                 var result = await proxy.HelloAsync("Hello");
                 Assert.Equal("Hello World!", result);
+            }
+        }
+
+        [Test]
+        public void SyncExceptionTest()
+        {
+            using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
+            using (var conn = new ZyanConnection(ConnConfig))
+            {
+                var proxy = conn.CreateProxy<IHelloServer>();
+                var ex = Assert.Throws<RemoteInvocationException>(() =>
+                    proxy.Error("Sync"))
+                        .GetInnermostException();
+
+                Assert.Equal("Sync", ex.Message);
+            }
+        }
+
+        [Test]
+        public async Task AsyncExceptionTest()
+        {
+            using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
+            using (var conn = new ZyanConnection(ConnConfig))
+            {
+                var proxy = conn.CreateProxy<IHelloServer>();
+                var ex = (await Assert.ThrowsAsync<RemoteInvocationException>(
+                    async () => await proxy.ErrorAsync("Async")))
+                        .GetInnermostException();
+
+                Assert.Equal("Async", ex.Message);
             }
         }
 

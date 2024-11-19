@@ -9,9 +9,9 @@ namespace Zyan.Communication
     /// </summary>
     public class ZyanConnection : IDisposable
     {
-        private ZyanConnectionConfig Config { get; set; }
+        internal ZyanConnectionConfig Config { get; set; }
 
-        private RemotingClient RemotingClient { get; set; }
+        internal RemotingClient RemotingClient { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyanConnection"/> class.

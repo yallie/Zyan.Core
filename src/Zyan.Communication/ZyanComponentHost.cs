@@ -15,7 +15,7 @@ namespace Zyan.Communication
 
         private RemotingServer RemotingServer { get; set; }
 
-        private IScopedContainer DiContainer { get; set; }
+        private IScopedContainer Container { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyanComponentHost" /> class.
@@ -27,8 +27,8 @@ namespace Zyan.Communication
             Config.Serializer = Config.Serializer ?? new BinarySerializerAdapter();
 
             // make sure we're using the scoped container
-            Config.DependencyInjectionContainer = DiContainer =
-                Config.DependencyInjectionContainer ?? new DryIocAdapter();
+            Config.ScopedContainer = Container =
+                Config.ScopedContainer ?? new DryIocAdapter();
 
             // start up the server as specified in the config
             RemotingServer = new RemotingServer(Config);
@@ -64,7 +64,7 @@ namespace Zyan.Communication
             where TService : class, TInterface, new()
         {
             var serviceLifetime = lifetime == ActivationType.SingleCall ? ServiceLifetime.SingleCall : ServiceLifetime.Singleton;
-            DiContainer.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
+            Container.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
             return this;
         }
     }

@@ -30,7 +30,7 @@ public class CanceledSubscriptionTest
     static void StartServer()
     {
         // using default tcp protocol and default port
-        using (var host = new ZyanComponentHost())
+        using (var host = new ZyanComponentHost(new ZyanComponentHostConfig { MessageEncryption = false }))
         {
             host.RegisterComponent<IService, Service>();
             //host.SubscriptionCanceled += (s, e) => Console.WriteLine("Subscription canceled: {0}.{1}", e.ComponentType, e.DelegateMemberName);
@@ -79,7 +79,7 @@ public class CanceledSubscriptionTest
     static void StartClient()
     {
         // using default protocol, host name and port
-        using (var conn = new ZyanConnection())
+        using (var conn = new ZyanConnection(new ZyanConnectionConfig { MessageEncryption = false, SendTimeout = 1 }))
         {
             var handler = new EventHandler((s, e) =>
                 Console.WriteLine("This code was called by server!"));
