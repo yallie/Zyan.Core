@@ -10,7 +10,7 @@ namespace Zyan.Tests
 {
     public partial class RegressionTests : TestBase
     {
-        // [Test] FAILS
+        // [Test] // FAILS
         public async Task SyncTwoClientEventsFailing()
         {
             var hostConfig = Set(HostConfig, c =>

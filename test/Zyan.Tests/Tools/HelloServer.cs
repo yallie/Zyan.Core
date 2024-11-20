@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DryIoc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Zyan.Tests.Tools
 {
@@ -19,6 +20,24 @@ namespace Zyan.Tests.Tools
         {
             await Task.Delay(1);
             Error(msg);
+        }
+
+        private class NonSerializable : Exception
+        {
+            public NonSerializable(string message)
+                : base(message)
+            {
+            }
+        }
+
+        public void NonSerializableError(string msg, params string[] data)
+        {
+            var ex = new NonSerializable(msg);
+
+            foreach (var item in data)
+                ex.Data[item] = item;
+
+            throw ex;
         }
     }
 }

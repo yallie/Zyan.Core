@@ -11,5 +11,7 @@ namespace Zyan.Tests.Tools
         void Error(string msg);
 
         Task ErrorAsync(string msg);
+
+        void NonSerializableError(string msg, params string[] data);
     }
 }

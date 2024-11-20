@@ -65,6 +65,31 @@ namespace Zyan.Tests
             }
         }
 
+        [Test]
+        public void NonSerializableExceptionTest()
+        {
+            using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
+            using (var conn = new ZyanConnection(ConnConfig))
+            {
+                var proxy = conn.CreateProxy<IHelloServer>();
+                var ex = Assert.Throws<RemoteInvocationException>(() =>
+                    proxy.NonSerializableError("Hello", "Serializable", "World"))
+                        .GetInnermostException();
+
+                Assert.NotNull(ex);
+                Assert.IsType<SerializableException>(ex);
+
+                if (ex is SerializableException sx)
+                {
+                    Assert.Equal("NonSerializable", sx.SourceTypeName);
+                    Assert.Equal("Hello", ex.Message);
+                    Assert.Equal("Serializable", ex.Data["Serializable"]);
+                    Assert.Equal("World", ex.Data["World"]);
+                    Assert.NotNull(ex.StackTrace);
+                }
+            }
+        }
+
         // [Test] // Hangs up!
         private async Task ReconnectTest()
         {
