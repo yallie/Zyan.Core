@@ -134,5 +134,38 @@ namespace Zyan.Tests
                 Assert.True(await IsInTime(cnt2.Task, timeout));
             }
         }
+
+        [Test]
+        public async Task SyncTwoClientEventsShouldWorkWhenClientDisconnects()
+        {
+            using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
+            using (var conn2 = new ZyanConnection(ConnConfig))
+            {
+                var max = 200;
+                var timeout = TimeSpan.FromSeconds(5);
+
+                var cnt1 = new AsyncCounter(max);
+                var conn1 = new ZyanConnection(ConnConfig);
+                var proxy1 = conn1.CreateProxy<IEventServer>();
+                proxy1.MyEvent += (s, e) => cnt1.Increment();
+
+                var cnt2 = new AsyncCounter(max);
+                var proxy2 = conn2.CreateProxy<IEventServer>();
+                proxy2.MyEvent += (s, e) => cnt2.Increment();
+
+                // close the first client
+                conn1.Dispose();
+
+                // second client should get the event
+                await Task.Delay(1000);
+                proxy2.OnMyEvent();
+                await Task.Delay(100);
+
+                Assert.False(cnt1.CurrentValue > 0);
+                Assert.True(cnt2.CurrentValue > 0);
+
+                await Task.Delay(300);
+            }
+        }
     }
 }

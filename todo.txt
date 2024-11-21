@@ -2,7 +2,7 @@
 
 + RPC hello world
 + RPC with events
-- Event fails when a client disconnects unexpectedly
++ Event fails when a client disconnects unexpectedly
 + Exceptions
 - Exception translation
 + Message encryption on/off

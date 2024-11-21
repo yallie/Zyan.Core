@@ -10,25 +10,26 @@ namespace Zyan.Tests
 {
     public partial class RegressionTests : TestBase
     {
-        // [Test] // FAILS
+        [Test] // related to issue: https://github.com/theRainbird/CoreRemoting/issues/72
         public async Task SyncTwoClientEventsFailing()
         {
+            var encr = true;
             var hostConfig = Set(HostConfig, c =>
             {
-                c.MessageEncryption = true;
+                c.MessageEncryption = encr;
                 c.Channel = new WebsocketServerChannel();
             });
 
             var connConfig1 = Set(ConnConfig, c =>
             {
-                c.MessageEncryption = true;
+                c.MessageEncryption = encr;
                 c.Channel = new WebsocketClientChannel();
                 c.SendTimeout = 3;
             });
 
             var connConfig2 = Set(ConnConfig, c =>
             {
-                c.MessageEncryption = true;
+                c.MessageEncryption = encr;
                 c.Channel = new WebsocketClientChannel();
                 c.SendTimeout = 0;
             });
@@ -52,9 +53,11 @@ namespace Zyan.Tests
                 conn1.Dispose();
 
                 // second client should get the event
-                await Task.Delay(100);
+                await Task.Delay(1000);
                 proxy2.OnMyEvent();
                 await Task.Delay(100);
+
+                Assert.False(cnt1.CurrentValue > 0);
                 Assert.True(cnt2.CurrentValue > 0);
 
                 await Task.Delay(300);
