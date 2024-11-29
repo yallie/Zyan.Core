@@ -32,6 +32,9 @@ Y [2024-11-15]
 --------
 Channel ideas:
 
+- QUIC Quicsharp https://github.com/quicsharp/quicsharp
+- QUIC Quic.NET https://github.com/Vect0rZ/Quic.NET
+- QUIC MsQuic.NET https://github.com/StirlingLabs/MsQuic.Net
 - Web sockets https://stacktuts.com/how-to-work-with-system-net-websockets-without-asp-net-in-c#method-3-websocket-implementation-using-raw-sockets
 - Builtin https://learn.microsoft.com/en-us/dotnet/api/system.net.websockets
 - WebSocket4Net https://github.com/kerryjiang/WebSocket4Net
