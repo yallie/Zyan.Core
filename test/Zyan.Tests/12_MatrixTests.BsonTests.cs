@@ -1,14 +1,13 @@
 ﻿using CoreRemoting.Serialization.Bson;
 using Zyan.Communication;
 
-namespace Zyan.Tests
-{
-    public class MatrixTests_BsonTests : RpcTests
-    {
-        protected override ZyanComponentHostConfig HostConfig =>
-            Set(base.HostConfig, c => c.Serializer = new BsonSerializerAdapter());
+namespace Zyan.Tests;
 
-        protected override ZyanConnectionConfig ConnConfig =>
-            Set(base.ConnConfig, c => c.Serializer = new BsonSerializerAdapter());
-    }
+public class MatrixTests_BsonTests : RpcTests
+{
+    protected override ZyanComponentHostConfig HostConfig =>
+        Set(base.HostConfig, c => c.Serializer = new BsonSerializerAdapter());
+
+    protected override ZyanConnectionConfig ConnConfig =>
+        Set(base.ConnConfig, c => c.Serializer = new BsonSerializerAdapter());
 }

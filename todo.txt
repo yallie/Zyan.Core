@@ -13,19 +13,19 @@
 - Call context for progress tracking/cancelling
 - Delegate parameters https://gist.github.com/yallie/d39a2e81106dc5572f1e2b5f519510eb
 - Stream parameters (if possible) https://gist.github.com/yallie/7767323
-— DryIoc server side support: server call scope
+- DryIoc server side support: server call scope
 - Server-side MEF component registration
-— SRP authorization
-— LINQ-provider, client-side LINQ, GetTable<T>
-— LINQ expression parameters
-— Client-side MEF catalog
-— Method call interception and caching
+- SRP authorization
+- LINQ-provider, client-side LINQ, GetTable<T>
+- LINQ expression parameters
+- Client-side MEF catalog
+- Method call interception and caching
 - Disconnected and Reconnected events https://gist.github.com/yallie/437ea4c087725693e1c2
 - Cancelling scheduled events on session termination
 - Authorization with password change
 - Two-factor authoruzation
 - FormatUrl API for client protocol
-— Look for more real appserver use cases
+- Look for more real appserver use cases
 
 Y [2024-11-15]
 
@@ -42,5 +42,7 @@ Channel ideas:
 - SuperSocket.Udp https://github.com/kerryjiang/SuperSocket
 - NetMQ https://stacktuts.com/how-to-work-with-system-net-websockets-without-asp-net-in-c#method-3-websocket-implementation-using-raw-sockets
 - ClrZmq https://github.com/zeromq/clrzmq4
+- Named pipes https://github.com/alekshura/Compentio.Pipes/tree/main/Compentio.Pipes/Compentio.Pipes/Extensions
+- Named pipes https://dev.to/alekshura/net-5-named-pipes-4h6j
 
 Y [2024-11-26]
