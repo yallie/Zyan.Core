@@ -6,7 +6,7 @@
 + Exceptions
 - Exception translation
 + Message encryption on/off
-- Session management
++ Session management
 - Session variables
 - ZyanHost events: Before/After/Invoke/Logon/Etc
 - Cluster host on the same port as main host
@@ -36,7 +36,7 @@ Channel ideas:
 - QUIC Quic.NET https://github.com/Vect0rZ/Quic.NET
 - QUIC MsQuic.NET https://github.com/StirlingLabs/MsQuic.Net
 - Web sockets https://stacktuts.com/how-to-work-with-system-net-websockets-without-asp-net-in-c#method-3-websocket-implementation-using-raw-sockets
-- Builtin https://learn.microsoft.com/en-us/dotnet/api/system.net.websockets
++ Builtin https://learn.microsoft.com/en-us/dotnet/api/system.net.websockets
 - WebSocket4Net https://github.com/kerryjiang/WebSocket4Net
 - Fleck websocket https://github.com/statianzo/Fleck
 - SuperSocket.Udp https://github.com/kerryjiang/SuperSocket

@@ -7,5 +7,6 @@ namespace Zyan.Tests.Tools
     {
         Guid GetSessionID();
         Task<Guid> GetSessionIDAsync();
+        bool SessionsAreSame();
     }
 }

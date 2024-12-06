@@ -7,6 +7,7 @@
 *.nupkg
 .vs
 .temp
+.idea
 tests.bat
 bin
 obj
