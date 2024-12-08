@@ -30,9 +30,9 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
     public IEnumerable<RemotingSession> Sessions => SessionRepository.Sessions;
 
     /// <inheritdoc/>
-    public RemotingSession CreateSession(byte[] clientPublicKey, IRemotingServer server, IRawMessageTransport rawMessageTransport)
+    public RemotingSession CreateSession(byte[] clientPublicKey, string clientAddress, IRemotingServer server, IRawMessageTransport rawMessageTransport)
     {
-        var rs = SessionRepository.CreateSession(clientPublicKey, server, rawMessageTransport);
+        var rs = SessionRepository.CreateSession(clientPublicKey, clientAddress, server, rawMessageTransport);
         var ss = new ServerSession(rs, server, this);
         ServerSessions[ss.SessionID] = ss;
         return rs;

@@ -8,7 +8,7 @@
 + Message encryption on/off
 + Session management
 - Session variables
-- ZyanHost events: Before/After/Invoke/Logon/Etc
++ ZyanHost events: Before/After/Invoke/Logon/Etc
 - Cluster host on the same port as main host
 - Call context for progress tracking/cancelling
 - Delegate parameters https://gist.github.com/yallie/d39a2e81106dc5572f1e2b5f519510eb
@@ -23,7 +23,7 @@
 - Disconnected and Reconnected events https://gist.github.com/yallie/437ea4c087725693e1c2
 - Cancelling scheduled events on session termination
 - Authorization with password change
-- Two-factor authoruzation
+- Two-factor authorization
 - FormatUrl API for client protocol
 - Look for more real appserver use cases
 
