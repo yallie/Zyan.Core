@@ -23,9 +23,9 @@ public class InvokeCanceledEventArgs(ServerRpcContext context) : EventArgs
     /// <summary>
     /// Gets or sets the exception in case of cancellation.
     /// </summary>
-    public Exception CancelException
+    public RemoteInvocationException CancelException
     {
-        get => Context.Exception;
+        get => Context.Exception as RemoteInvocationException;
         set => Context.Exception = value;
     }
 

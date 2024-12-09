@@ -38,55 +38,52 @@ public partial class RpcTests : TestBase
     [Test]
     public void SyncExceptionTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
-        using (var conn = new ZyanConnection(ConnConfig))
-        {
-            var proxy = conn.CreateProxy<IHelloServer>();
-            var ex = Assert.Throws<RemoteInvocationException>(() =>
-                    proxy.Error("Sync"))
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var ex = Assert.Throws<RemoteInvocationException>(() =>
+            proxy.Error("Sync"))
                 .GetInnermostException();
 
-            Assert.Equal("Sync", ex.Message);
-        }
+        Assert.Equal("Sync", ex.Message);
     }
 
     [Test]
     public async Task AsyncExceptionTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
-        using (var conn = new ZyanConnection(ConnConfig))
-        {
-            var proxy = conn.CreateProxy<IHelloServer>();
-            var ex = (await Assert.ThrowsAsync<RemoteInvocationException>(
-                    async () => await proxy.ErrorAsync("Async")))
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var ex = (await Assert.ThrowsAsync<RemoteInvocationException>(
+            async () => await proxy.ErrorAsync("Async")))
                 .GetInnermostException();
 
-            Assert.Equal("Async", ex.Message);
-        }
+        Assert.Equal("Async", ex.Message);
     }
 
     [Test]
     public void NonSerializableExceptionTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
-        using (var conn = new ZyanConnection(ConnConfig))
-        {
-            var proxy = conn.CreateProxy<IHelloServer>();
-            var ex = Assert.Throws<RemoteInvocationException>(() =>
-                    proxy.NonSerializableError("Hello", "Serializable", "World"))
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var ex = Assert.Throws<RemoteInvocationException>(() =>
+            proxy.NonSerializableError("Hello", "Serializable", "World"))
                 .GetInnermostException();
 
-            Assert.NotNull(ex);
-            Assert.IsType<SerializableException>(ex);
+        Assert.NotNull(ex);
+        Assert.IsType<SerializableException>(ex);
 
-            if (ex is SerializableException sx)
-            {
-                Assert.Equal("NonSerializable", sx.SourceTypeName);
-                Assert.Equal("Hello", ex.Message);
-                Assert.Equal("Serializable", ex.Data["Serializable"]);
-                Assert.Equal("World", ex.Data["World"]);
-                Assert.NotNull(ex.StackTrace);
-            }
+        if (ex is SerializableException sx)
+        {
+            Assert.Equal("NonSerializable", sx.SourceTypeName);
+            Assert.Equal("Hello", ex.Message);
+            Assert.Equal("Serializable", ex.Data["Serializable"]);
+            Assert.Equal("World", ex.Data["World"]);
+            Assert.NotNull(ex.StackTrace);
         }
     }
 
@@ -133,5 +130,28 @@ public partial class RpcTests : TestBase
 
         Assert.NotNull(ex);
         Assert.Contains("auth", ex.Message);
+    }
+
+    [Test]
+    public void Exceptions_can_be_translated_by_server()
+    {
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+        ConnConfig.SendTimeout = 120;
+
+        // exception translator
+        host.InvokeCanceled += (s, e) =>
+        {
+            // current limitation: CancelException should be of type RemoteInvocationException
+            if (e.CancelException.InnerException.GetType().Name.Contains("Serializable"))
+                e.CancelException = new RemoteInvocationException("Translated!", e.CancelException);
+        };
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var ex = Assert.Throws<RemoteInvocationException>(() =>
+            proxy.NonSerializableError("Hello", "Serializable", "World"));
+
+        Assert.NotNull(ex);
+        Assert.Equal("Translated!", ex.Message);
     }
 }
