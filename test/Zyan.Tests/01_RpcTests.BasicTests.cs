@@ -89,4 +89,49 @@ public partial class RpcTests : TestBase
             }
         }
     }
+
+    [Test]
+    public void Certain_services_can_be_excluded_from_authentication()
+    {
+        var hostConfig = HostConfig;
+        hostConfig.AuthenticationRequired = true;
+        hostConfig.AuthenticationProvider = new FakeAuthProvider(c => true);
+
+        // authenticated client
+        var connConfig1 = ConnConfig;
+        connConfig1.Credentials = [new()];
+
+        // not authenticated client
+        var connConfig2 = ConnConfig;
+
+        // host requires authentication
+        using var host = new ZyanComponentHost(hostConfig)
+            .RegisterComponent<IHelloServer, HelloServer>()
+            .RegisterComponent<ISessionServer, SessionServer>();
+
+        // session server doesn't require authentication
+        host.BeforeInvoke += (s, e) =>
+            e.Context.AuthenticationRequired =
+                !e.InterfaceName.Contains("SessionServer");
+
+        // authentication succeeded
+        using var conn1 = new ZyanConnection(connConfig1);
+        var hello1 = conn1.CreateProxy<IHelloServer>();
+        Assert.Equal("Hello World!", hello1.Hello("Hello"));
+        var sess1 = conn1.CreateProxy<ISessionServer>();
+        Assert.NotEqual(Guid.Empty, sess1.GetSessionID());
+
+        // authentication not required
+        using var conn2 = new ZyanConnection(connConfig2);
+        var sess2 = conn2.CreateProxy<ISessionServer>();
+        Assert.NotEqual(Guid.Empty, sess2.GetSessionID());
+        Assert.NotEqual(sess1.GetSessionID(), sess2.GetSessionID());
+
+        // authentication required
+        var hello2 = conn2.CreateProxy<IHelloServer>();
+        var ex = Assert.Throws<RemoteInvocationException>(() => hello2.Hello("Hello"));
+
+        Assert.NotNull(ex);
+        Assert.Contains("auth", ex.Message);
+    }
 }

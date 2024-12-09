@@ -9,12 +9,12 @@
 + Session management
 - Session variables
 + ZyanHost events: Before/After/Invoke/Logon/Etc
-- Cluster host on the same port as main host
 - Call context for progress tracking/cancelling
 - Delegate parameters https://gist.github.com/yallie/d39a2e81106dc5572f1e2b5f519510eb
 - Stream parameters (if possible) https://gist.github.com/yallie/7767323
 - DryIoc server side support: server call scope
 - Server-side MEF component registration
+- Zyan-like authentication provider
 - SRP authorization
 - LINQ-provider, client-side LINQ, GetTable<T>
 - LINQ expression parameters
@@ -26,6 +26,11 @@
 - Two-factor authorization
 - FormatUrl API for client protocol
 - Look for more real appserver use cases
+
+Not possible:
+
+- Disconnect, then reconnect
+- Cluster host on the same port as main host - not possible, but services can be excluded from authentication via BeforeInvoke handler
 
 Y [2024-11-15]
 
