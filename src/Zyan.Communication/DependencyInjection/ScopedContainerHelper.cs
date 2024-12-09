@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CoreRemoting.DependencyInjection;
+using CoreRemoting.Toolbox;
 
 namespace Zyan.Communication.DependencyInjection
 {
@@ -19,7 +20,8 @@ namespace Zyan.Communication.DependencyInjection
 
         private IDependencyInjectionContainer Container { get; }
 
-        public IScopedContainer OpenScope(string name = null, bool track = false) => this;
+        public IDisposable OpenScope(string name = null, bool track = false) =>
+            Disposable.Create();
 
         public void Dispose() => Container.Dispose();
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using CoreRemoting.DependencyInjection;
+using CoreRemoting.Toolbox;
 using DryIoc;
 using DryIoc.MefAttributedModel;
 
@@ -45,15 +47,20 @@ namespace Zyan.Communication.DependencyInjection
             RootContainer.RegisterDelegate(factoryDelegate, GetReuse(lifetime), serviceKey: serviceName);
 
         protected override object ResolveServiceFromContainer(ServiceRegistration registration) =>
-            RootContainer.Resolve(registration.InterfaceType ?? registration.ImplementationType, serviceKey: registration.ServiceName);
+            Container.Resolve(registration.InterfaceType ?? registration.ImplementationType, serviceKey: registration.ServiceName);
 
         protected override TServiceInterface ResolveServiceFromContainer<TServiceInterface>(ServiceRegistration registration) =>
             ResolveServiceFromContainer(registration) as TServiceInterface;
 
-        public IScopedContainer OpenScope(string name = null, bool track = false)
+        private IResolverContext Container => Scope.Value ?? RootContainer;
+
+        private static AsyncLocal<IResolverContext> Scope { get; } = new AsyncLocal<IResolverContext>();
+
+        public IDisposable OpenScope(string name = null, bool track = false)
         {
-            RootContainer.OpenScope(name, track);
-            return this;
+            var oldValue = Scope.Value;
+            Scope.Value = RootContainer.OpenScope(name, track);
+            return Disposable.Create(() => Scope.Value = oldValue);
         }
     }
 }

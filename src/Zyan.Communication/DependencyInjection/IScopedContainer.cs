@@ -1,4 +1,5 @@
-﻿using CoreRemoting.DependencyInjection;
+﻿using System;
+using CoreRemoting.DependencyInjection;
 
 namespace Zyan.Communication.DependencyInjection
 {
@@ -12,6 +13,6 @@ namespace Zyan.Communication.DependencyInjection
         /// </summary>
         /// <param name="name">Optional name.</param>
         /// <param name="track">Track the scope in the parent container.</param>
-        IScopedContainer OpenScope(string name = null, bool track = false);
+        IDisposable OpenScope(string name = null, bool track = false);
     }
 }
