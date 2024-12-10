@@ -158,4 +158,32 @@ public partial class RpcTests : TestBase
         Assert.True(cnt2.CurrentValue > 0);
         await Task.Delay(300);
     }
+
+    [Fact]
+    public void Server_can_register_and_invoke_client_callback_delegates()
+    {
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<ICallbackService, CallbackService>();
+
+        using var conn1 = new ZyanConnection(ConnConfig);
+        using var conn2 = new ZyanConnection(ConnConfig);
+        var proxy1 = conn1.CreateProxy<ICallbackService>();
+        var proxy2 = conn2.CreateProxy<ICallbackService>();
+
+        var counter1 = 0;
+        proxy1.RegisterCallback(() => counter1++);
+        Assert.Equal(0, counter1);
+
+        proxy1.DoCallback();
+        Assert.Equal(1, counter1);
+
+        var counter2 = 0;
+        proxy2.RegisterCallback(() => counter2++);
+        Assert.Equal(0, counter2);
+
+        proxy2.DoCallback();
+        proxy2.DoCallback();
+        Assert.Equal(2, counter2);
+        Assert.Equal(1, counter1);
+    }
 }

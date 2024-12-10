@@ -1,17 +1,16 @@
 ﻿using System.Threading.Tasks;
 
-namespace Zyan.Tests.Tools
+namespace Zyan.Tests.Tools;
+
+public interface IHelloServer
 {
-    public interface IHelloServer
-    {
-        string Hello(string hello);
+    string Hello(string hello);
 
-        Task<string> HelloAsync(string hello);
+    Task<string> HelloAsync(string hello);
 
-        void Error(string msg);
+    void Error(string msg);
 
-        Task ErrorAsync(string msg);
+    Task ErrorAsync(string msg);
 
-        void NonSerializableError(string msg, params string[] data);
-    }
+    void NonSerializableError(string msg, params string[] data);
 }

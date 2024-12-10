@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Zyan.Tests.Tools
+namespace Zyan.Tests.Tools;
+
+public interface IEventServer
 {
-    public interface IEventServer
-    {
-        event EventHandler MyEvent;
+    event EventHandler MyEvent;
 
-        void OnMyEvent();
+    void OnMyEvent();
 
-        void StressTest(int count);
+    void StressTest(int count);
 
-        Task OnMyEventAsync();
+    Task OnMyEventAsync();
 
-        Task StressTestAsync(int count);
-    }
+    Task StressTestAsync(int count);
 }

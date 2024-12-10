@@ -31,10 +31,10 @@ public partial class ZyanComponentHost : IDisposable
 
         // TODO: handle custom config session repository?
         var sessionManager = new InProcSessionManager(
-            config.KeySize,
-            config.InactiveSessionSweepInterval,
-            config.MaximumSessionInactivityTime,
-            config.SessionRepository);
+            Config.KeySize,
+            Config.InactiveSessionSweepInterval,
+            Config.MaximumSessionInactivityTime,
+            Config.SessionRepository);
 
         SessionManager = sessionManager;
         Config.SessionRepository = sessionManager;
