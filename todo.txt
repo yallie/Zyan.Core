@@ -4,11 +4,12 @@
 + RPC with events
 + Event fails when a client disconnects unexpectedly
 + Exceptions
-+ Exception translation - NOTE: should always be RemoteInvocationException - TODO: try to fix to support any exceptions
++ Exception translation
 + Message encryption on/off
 + Session management
 - Session variables
 + ZyanHost events: Before/After/Invoke/Logon/Etc
+- Call interception and caching
 - Reconnecting clients after server restart
 - Reconnecting clients after changing the current network
 - Reconnecting clients after short connection loss
@@ -34,7 +35,7 @@
 Not possible:
 
 - Disconnect, then reconnect - not possible, requires re-creation of the channel
-- Cluster host on the same port as main host - not possible, but services can be excluded from authentication via BeforeInvoke handler
+- Cluster host on the same port as main host - not possible, but certain services can be excluded from authentication via BeforeInvoke handler
 
 Y [2024-11-15]
 

@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
-using Test = Xunit.FactAttribute;
 
 namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    [Test]
+    [Fact]
     public async Task SessionTest()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<ISessionServer, SessionServer>();
@@ -23,7 +22,7 @@ public partial class RpcTests : TestBase
         Assert.Equal(sid1, sid2);
     }
 
-    [Test]
+    [Fact]
     public void CurrentSessionCapturedByComponentConstructorIsTheSame()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<ISessionServer, SessionServer>();

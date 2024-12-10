@@ -3,168 +3,159 @@ using System.Threading.Tasks;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
-using Test = Xunit.FactAttribute;
 
 namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    [Test]
+    [Fact]
     public async Task SyncSelfEvent()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        {
-            var tcs1 = new TaskCompletionSource<bool>();
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
-            proxy1.OnMyEvent();
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
 
-            var result = await IsInTime(tcs1.Task);
-            Assert.True(result);
-        }
+        var tcs1 = new TaskCompletionSource<bool>();
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
+        proxy1.OnMyEvent();
+
+        var result = await IsInTime(tcs1.Task);
+        Assert.True(result);
     }
 
-    [Test]
+    [Fact]
     public async Task SyncTwoClientEvents()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        using (var conn2 = new ZyanConnection(ConnConfig))
-        {
-            var tcs1 = new TaskCompletionSource<bool>();
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
+        using var conn2 = new ZyanConnection(ConnConfig);
 
-            var tcs2 = new TaskCompletionSource<bool>();
-            var proxy2 = conn2.CreateProxy<IEventServer>();
-            proxy2.MyEvent += (s, e) => tcs2.TrySetResult(true);
-            proxy2.OnMyEvent();
+        var tcs1 = new TaskCompletionSource<bool>();
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
 
-            // both clients should get the event
-            Assert.True(await IsInTime(tcs1.Task));
-            Assert.True(await IsInTime(tcs2.Task));
-        }
+        var tcs2 = new TaskCompletionSource<bool>();
+        var proxy2 = conn2.CreateProxy<IEventServer>();
+        proxy2.MyEvent += (s, e) => tcs2.TrySetResult(true);
+        proxy2.OnMyEvent();
+
+        // both clients should get the event
+        Assert.True(await IsInTime(tcs1.Task));
+        Assert.True(await IsInTime(tcs2.Task));
     }
 
-    [Test]
+    [Fact]
     public async Task AsyncSelfEvent()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        {
-            var tcs1 = new TaskCompletionSource<bool>();
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
-            await proxy1.OnMyEventAsync();
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
 
-            var result = await IsInTime(tcs1.Task);
-            Assert.True(result);
-        }
+        var tcs1 = new TaskCompletionSource<bool>();
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
+        await proxy1.OnMyEventAsync();
+
+        var result = await IsInTime(tcs1.Task);
+        Assert.True(result);
     }
 
-    [Test]
+    [Fact]
     public async Task AsyncTwoClientEvents()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        using (var conn2 = new ZyanConnection(ConnConfig))
-        {
-            var tcs1 = new TaskCompletionSource<bool>();
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
+        using var conn2 = new ZyanConnection(ConnConfig);
 
-            var tcs2 = new TaskCompletionSource<bool>();
-            var proxy2 = conn2.CreateProxy<IEventServer>();
-            proxy2.MyEvent += (s, e) => tcs2.TrySetResult(true);
-            await proxy2.OnMyEventAsync();
+        var tcs1 = new TaskCompletionSource<bool>();
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
 
-            // both clients should get the event
-            Assert.True(await IsInTime(tcs1.Task));
-            Assert.True(await IsInTime(tcs2.Task));
-        }
+        var tcs2 = new TaskCompletionSource<bool>();
+        var proxy2 = conn2.CreateProxy<IEventServer>();
+        proxy2.MyEvent += (s, e) => tcs2.TrySetResult(true);
+        await proxy2.OnMyEventAsync();
+
+        // both clients should get the event
+        Assert.True(await IsInTime(tcs1.Task));
+        Assert.True(await IsInTime(tcs2.Task));
     }
 
-    [Test]
+    [Fact]
     public async Task SyncTwoClientEventsStressTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        using (var conn2 = new ZyanConnection(ConnConfig))
-        {
-            var max = 200;
-            var timeout = TimeSpan.FromSeconds(5);
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
+        using var conn2 = new ZyanConnection(ConnConfig);
 
-            var cnt1 = new AsyncCounter(max);
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => cnt1.Increment();
+        var max = 200;
+        var timeout = TimeSpan.FromSeconds(5);
 
-            var cnt2 = new AsyncCounter(max);
-            var proxy2 = conn2.CreateProxy<IEventServer>();
-            proxy2.MyEvent += (s, e) => cnt2.Increment();
-            proxy2.StressTest(max);
+        var cnt1 = new AsyncCounter(max);
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => cnt1.Increment();
 
-            // both clients should get all the events
-            Assert.True(await IsInTime(cnt1.Task, timeout));
-            Assert.True(await IsInTime(cnt2.Task, timeout));
-        }
+        var cnt2 = new AsyncCounter(max);
+        var proxy2 = conn2.CreateProxy<IEventServer>();
+        proxy2.MyEvent += (s, e) => cnt2.Increment();
+        proxy2.StressTest(max);
+
+        // both clients should get all the events
+        Assert.True(await IsInTime(cnt1.Task, timeout));
+        Assert.True(await IsInTime(cnt2.Task, timeout));
     }
 
-    [Test]
+    [Fact]
     public async Task AsyncTwoClientEventsStressTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn1 = new ZyanConnection(ConnConfig))
-        using (var conn2 = new ZyanConnection(ConnConfig))
-        {
-            var max = 200;
-            var timeout = TimeSpan.FromSeconds(5);
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn1 = new ZyanConnection(ConnConfig);
+        using var conn2 = new ZyanConnection(ConnConfig);
 
-            var cnt1 = new AsyncCounter(max);
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => cnt1.Increment();
+        var max = 200;
+        var timeout = TimeSpan.FromSeconds(5);
 
-            var cnt2 = new AsyncCounter(max);
-            var proxy2 = conn2.CreateProxy<IEventServer>();
-            proxy2.MyEvent += (s, e) => cnt2.Increment();
-            await proxy2.StressTestAsync(max);
+        var cnt1 = new AsyncCounter(max);
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => cnt1.Increment();
 
-            // both clients should get all the events
-            Assert.True(await IsInTime(cnt1.Task, timeout));
-            Assert.True(await IsInTime(cnt2.Task, timeout));
-        }
+        var cnt2 = new AsyncCounter(max);
+        var proxy2 = conn2.CreateProxy<IEventServer>();
+        proxy2.MyEvent += (s, e) => cnt2.Increment();
+        await proxy2.StressTestAsync(max);
+
+        // both clients should get all the events
+        Assert.True(await IsInTime(cnt1.Task, timeout));
+        Assert.True(await IsInTime(cnt2.Task, timeout));
     }
 
-    [Test]
+    [Fact]
     public async Task SyncTwoClientEventsShouldWorkWhenClientDisconnects()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>())
-        using (var conn2 = new ZyanConnection(ConnConfig))
-        {
-            var max = 200;
-            var timeout = TimeSpan.FromSeconds(5);
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var conn2 = new ZyanConnection(ConnConfig);
 
-            var cnt1 = new AsyncCounter(max);
-            var conn1 = new ZyanConnection(ConnConfig);
-            var proxy1 = conn1.CreateProxy<IEventServer>();
-            proxy1.MyEvent += (s, e) => cnt1.Increment();
+        var max = 200;
+        var timeout = TimeSpan.FromSeconds(5);
 
-            var cnt2 = new AsyncCounter(max);
-            var proxy2 = conn2.CreateProxy<IEventServer>();
-            proxy2.MyEvent += (s, e) => cnt2.Increment();
+        var cnt1 = new AsyncCounter(max);
+        var conn1 = new ZyanConnection(ConnConfig);
+        var proxy1 = conn1.CreateProxy<IEventServer>();
+        proxy1.MyEvent += (s, e) => cnt1.Increment();
 
-            // close the first client
-            conn1.Dispose();
+        var cnt2 = new AsyncCounter(max);
+        var proxy2 = conn2.CreateProxy<IEventServer>();
+        proxy2.MyEvent += (s, e) => cnt2.Increment();
 
-            // second client should get the event
-            await Task.Delay(1000);
-            proxy2.OnMyEvent();
-            await Task.Delay(100);
+        // close the first client
+        conn1.Dispose();
 
-            Assert.False(cnt1.CurrentValue > 0);
-            Assert.True(cnt2.CurrentValue > 0);
+        // second client should get the event
+        await Task.Delay(1000);
+        proxy2.OnMyEvent();
+        await Task.Delay(100);
 
-            await Task.Delay(300);
-        }
+        Assert.False(cnt1.CurrentValue > 0);
+        Assert.True(cnt2.CurrentValue > 0);
+        await Task.Delay(300);
     }
 }

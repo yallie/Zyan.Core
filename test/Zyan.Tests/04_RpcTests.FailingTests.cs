@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
-using Test = Xunit.FactAttribute;
 
 namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    // [Test] // Error: channel is not initialized
+    // [Fact] // Error: channel is not initialized
     private async Task ReconnectTest()
     {
         using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
@@ -30,7 +29,7 @@ public partial class RpcTests : TestBase
         }
     }
 
-    // [Test] // Fails: two channels try to listen on the same port
+    // [Fact] // Fails: two channels try to listen on the same port
     private async Task SameHostConfig()
     {
         // HostConfig creates a new instance every time

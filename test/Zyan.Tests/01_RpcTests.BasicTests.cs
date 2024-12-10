@@ -1,41 +1,38 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using CoreRemoting;
+using CoreRemoting.Serialization;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
-using Test = Xunit.FactAttribute;
-using System;
-using CoreRemoting;
-using CoreRemoting.Serialization;
 
 namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    [Test]
+    [Fact]
     public void SyncRpcTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
-        using (var conn = new ZyanConnection(ConnConfig))
-        {
-            var proxy = conn.CreateProxy<IHelloServer>();
-            var result = proxy.Hello("Hello");
-            Assert.Equal("Hello World!", result);
-        }
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = proxy.Hello("Hello");
+        Assert.Equal("Hello World!", result);
     }
 
-    [Test]
+    [Fact]
     public async Task AsyncRpcTest()
     {
-        using (var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>())
-        using (var conn = new ZyanConnection(ConnConfig))
-        {
-            var proxy = conn.CreateProxy<IHelloServer>();
-            var result = await proxy.HelloAsync("Hello");
-            Assert.Equal("Hello World!", result);
-        }
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = await proxy.HelloAsync("Hello");
+        Assert.Equal("Hello World!", result);
     }
 
-    [Test]
+    [Fact]
     public void SyncExceptionTest()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -49,7 +46,7 @@ public partial class RpcTests : TestBase
         Assert.Equal("Sync", ex.Message);
     }
 
-    [Test]
+    [Fact]
     public async Task AsyncExceptionTest()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -63,7 +60,7 @@ public partial class RpcTests : TestBase
         Assert.Equal("Async", ex.Message);
     }
 
-    [Test]
+    [Fact]
     public void NonSerializableExceptionTest()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -87,7 +84,7 @@ public partial class RpcTests : TestBase
         }
     }
 
-    [Test]
+    [Fact]
     public void Certain_services_can_be_excluded_from_authentication()
     {
         var hostConfig = HostConfig;
@@ -132,7 +129,7 @@ public partial class RpcTests : TestBase
         Assert.Contains("auth", ex.Message);
     }
 
-    [Test]
+    [Fact]
     public void Exceptions_can_be_translated_by_server()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -144,11 +141,11 @@ public partial class RpcTests : TestBase
         {
             // current limitation: CancelException should be of type RemoteInvocationException
             if (e.CancelException.InnerException.GetType().Name.Contains("Serializable"))
-                e.CancelException = new RemoteInvocationException("Translated!", e.CancelException);
+                e.CancelException = new Exception("Translated!", e.CancelException);
         };
 
         var proxy = conn.CreateProxy<IHelloServer>();
-        var ex = Assert.Throws<RemoteInvocationException>(() =>
+        var ex = Assert.Throws<Exception>(() =>
             proxy.NonSerializableError("Hello", "Serializable", "World"));
 
         Assert.NotNull(ex);
