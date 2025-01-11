@@ -9,8 +9,7 @@ namespace Zyan.Tests;
 
 public partial class RegressionTests : TestBase
 {
-    // [Test] // FAILS: throws either TaskCanceledException or ArgumentException
-    // saying "An item of the same key has already been added
+    // [Test] // FAILS: throws TaskCanceledException
     internal async Task WatsonTcpThrowsCanceledExceptionOnDispose()
     {
         // see https://github.com/dotnet/WatsonTcp/issues/303
@@ -28,8 +27,7 @@ public partial class RegressionTests : TestBase
         server.Dispose();
     }
 
-    // [Test] // FAILS: throws either TaskCanceledException or ArgumentException
-    // saying "An item of the same key has already been added
+    [Test]
     public async Task WatsonTcpServerAndClientInstantDisposal()
     {
         // can't reproduce the issue :)

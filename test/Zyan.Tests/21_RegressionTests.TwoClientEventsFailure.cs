@@ -36,15 +36,12 @@ public partial class RegressionTests : TestBase
         using var host = new ZyanComponentHost(hostConfig).RegisterComponent<IEventServer, EventServer>();
         using var conn2 = new ZyanConnection(connConfig2);
 
-        var max = 200;
-        var timeout = TimeSpan.FromSeconds(5);
-
-        var cnt1 = new AsyncCounter(max);
+        var cnt1 = new AsyncCounter();
         var conn1 = new ZyanConnection(connConfig1);
         var proxy1 = conn1.CreateProxy<IEventServer>();
         proxy1.MyEvent += (s, e) => cnt1.Increment();
 
-        var cnt2 = new AsyncCounter(max);
+        var cnt2 = new AsyncCounter();
         var proxy2 = conn2.CreateProxy<IEventServer>();
         proxy2.MyEvent += (s, e) => cnt2.Increment();
 
@@ -54,11 +51,9 @@ public partial class RegressionTests : TestBase
         // second client should get the event
         await Task.Delay(1000);
         proxy2.OnMyEvent();
-        await Task.Delay(100);
+        await cnt2.WaitForValue(1);
 
-        Assert.False(cnt1.CurrentValue > 0);
-        Assert.True(cnt2.CurrentValue > 0);
-
-        await Task.Delay(300);
+        Assert.False(cnt1.Value > 0);
+        Assert.True(cnt2.Value > 0);
     }
 }

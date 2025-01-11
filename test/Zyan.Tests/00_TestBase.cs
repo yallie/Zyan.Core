@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 using Zyan.Communication;
 
 namespace Zyan.Tests;
@@ -41,19 +39,5 @@ public class TestBase
     {
         setter(cfg);
         return cfg;
-    }
-
-    protected virtual TimeSpan DefaultTimeout => TimeSpan.FromSeconds(1);
-
-    protected async Task<T> IsInTime<T>(Task<T> task, TimeSpan? timeout = null, string message = "Timed out!")
-    {
-        var result = await Task.WhenAny(task, Task.Delay(timeout ?? DefaultTimeout));
-        if (ReferenceEquals(result, task))
-        {
-            return await task;
-        }
-
-        Assert.Fail(message);
-        throw new NotSupportedException();
     }
 }

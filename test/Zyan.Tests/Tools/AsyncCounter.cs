@@ -1,34 +1,44 @@
-﻿using System.Threading;
+﻿using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Zyan.Tests.Tools;
-
-public class AsyncCounter
+namespace Zyan.Tests.Tools
 {
-	public AsyncCounter(int max)
-	{
-		MaxValue = max;
-	}
+    /// <summary>
+    /// Threadsafe counter that can await for the given value.
+    /// </summary>
+    public class AsyncCounter
+    {
+        private ConcurrentDictionary<int, TaskCompletionSource<int>> Sources { get; } = new();
 
-	public int MaxValue { get; }
+        private int value;
 
-	public int CurrentValue => currentValue;
+        public int Value => value;
 
-	private int currentValue;
+        public AsyncCounter Increment()
+        {
+            var v = Interlocked.Increment(ref value);
 
-	public TaskCompletionSource<bool> CompletionSource { get; } =
-		new TaskCompletionSource<bool>();
+            if (Sources.TryGetValue(v, out var tcs) && tcs != null)
+            {
+                tcs.TrySetResult(v);
+            }
 
-	public Task<bool> Task => CompletionSource.Task;
+            return this;
+        }
 
-	public int Increment()
-	{
-		var result = Interlocked.Increment(ref currentValue);
-		if (result >= MaxValue)
-		{
-			CompletionSource.TrySetResult(true);
-		}
+        public Task<int> WaitForValue(int value)
+        {
+            var tcs = Sources.GetOrAdd(value, i => new());
+            if (value <= Value)
+            {
+                tcs.TrySetResult(value);
+            }
 
-		return result;
-	}
+            return tcs.Task;
+        }
+
+        public static AsyncCounter operator ++ (AsyncCounter ac) =>
+            ac.Increment();
+    }
 }
