@@ -6,8 +6,7 @@ namespace Zyan.Tests.Tools;
 
 public class CallbackService : ICallbackService
 {
-    private static ConcurrentDictionary<Guid, Action> Callbacks { get; } =
-        new ConcurrentDictionary<Guid, Action>();
+    private static ConcurrentDictionary<Guid, Action> Callbacks { get; } = [];
 
     private Guid ClientID => ServerSession.CurrentSession.SessionID;
 

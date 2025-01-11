@@ -10,19 +10,18 @@ public class TestBase
     // Make sure that all tests use their own TCP ports when run in parallel
     private static int LastUsedTcpPort = 9091;
 
-    private static ConcurrentDictionary<Type, int> Ports { get; } =
-        new ConcurrentDictionary<Type, int>();
+    private static ConcurrentDictionary<Type, int> Ports { get; } = [];
 
     protected virtual int TestPort => Ports.GetOrAdd(GetType(), t =>
         Interlocked.Increment(ref LastUsedTcpPort));
 
-    protected virtual ZyanComponentHostConfig HostConfig => new ZyanComponentHostConfig
+    protected virtual ZyanComponentHostConfig HostConfig => new()
     {
         NetworkPort = TestPort,
         MessageEncryption = false,
     };
 
-    protected virtual ZyanConnectionConfig ConnConfig => new ZyanConnectionConfig
+    protected virtual ZyanConnectionConfig ConnConfig => new()
     {
         // note: looks like RemotingClient keeps track
         // of all client instances created out of the same config

@@ -27,7 +27,9 @@ public partial class RpcTests : TestBase
     [Fact]
     public async Task SyncTwoClientEvents()
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>();
+
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 
@@ -63,7 +65,9 @@ public partial class RpcTests : TestBase
     [Fact]
     public async Task AsyncTwoClientEvents()
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>();
+
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 
@@ -84,7 +88,9 @@ public partial class RpcTests : TestBase
     [Fact]
     public async Task SyncTwoClientEventsStressTest()
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>();
+
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 
@@ -108,7 +114,9 @@ public partial class RpcTests : TestBase
     [Fact]
     public async Task AsyncTwoClientEventsStressTest()
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>();
+
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 

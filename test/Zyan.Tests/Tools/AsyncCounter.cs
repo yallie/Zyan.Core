@@ -9,7 +9,7 @@ namespace Zyan.Tests.Tools
     /// </summary>
     public class AsyncCounter
     {
-        private ConcurrentDictionary<int, TaskCompletionSource<int>> Sources { get; } = new();
+        private ConcurrentDictionary<int, TaskCompletionSource<int>> Sources { get; } = [];
 
         private int value;
 

@@ -48,8 +48,7 @@ public class ServerSession : IDisposable
     /// </summary>
     public Guid SessionID => RemotingSession.SessionId;
 
-    private static AsyncLocal<ServerSession> Current { get; } =
-        new AsyncLocal<ServerSession>();
+    private static AsyncLocal<ServerSession> Current { get; } = new();
 
     /// <summary>
     /// Gets the session of the current logical server thread.
