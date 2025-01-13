@@ -33,24 +33,21 @@ static void StartClient()
     Console.WriteLine("Server already running. Creating connection...");
     var sw = Stopwatch.StartNew();
 
-    using (var conn = new ZyanConnection())
+    using var conn = new ZyanConnection();
+    Console.WriteLine($"Connected to server: took {sw.Elapsed.TotalSeconds} seconds to connect.");
+    Console.WriteLine("Creating proxies...");
+
+    var callback = new Action(() =>
+        Console.WriteLine("This code was called by server!"));
+
+    var proxy = conn.CreateProxy<IService>();
+    proxy.RegisterCallback(callback);
+    Console.WriteLine("Client started. Hit ENTER to test, ^C to quit.");
+
+    while (true)
     {
-        Console.WriteLine($"Connected to server: took {sw.Elapsed.TotalSeconds} seconds to connect.");
-        Console.WriteLine("Creating proxies...");
-
-        var callback = new Action(() =>
-            Console.WriteLine("This code was called by server!"));
-
-        var proxy = conn.CreateProxy<IService>();
-        proxy.RegisterCallback(callback);
-
-        Console.WriteLine("Client started. Hit ENTER to test, ^C to quit.");
-
-        while (true)
-        {
-            Console.ReadLine();
-            proxy.DoCallback();
-        }
+        Console.ReadLine();
+        proxy.DoCallback();
     }
 }
 
@@ -60,15 +57,13 @@ static void StartServer()
 {
     var sw = Stopwatch.StartNew();
 
-    using (var host = new ZyanComponentHost())
-    {
-        host.RegisterComponent<IService, Service>();
+    using var host = new ZyanComponentHost();
+    host.RegisterComponent<IService, Service>();
 
-        Console.Title = "Delegate Server";
-        Console.WriteLine($"Server started. Took {sw.Elapsed.TotalSeconds} seconds to start.");
-        Console.WriteLine("Press ENTER to quit.");
-        Console.ReadLine();
-    }
+    Console.Title = "Delegate Server";
+    Console.WriteLine($"Server started. Took {sw.Elapsed.TotalSeconds} seconds to start.");
+    Console.WriteLine("Press ENTER to quit.");
+    Console.ReadLine();
 }
 
 public class Service : IService

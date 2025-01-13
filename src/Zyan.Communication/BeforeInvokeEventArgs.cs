@@ -76,7 +76,7 @@ public class BeforeInvokeEventArgs(ServerRpcContext context) : EventArgs
     /// <returns>String representation of data</returns>
     public override string ToString()
     {
-        List<string> argsAsString = new List<string>();
+        var argsAsString = new List<string>();
 
         if (Arguments != null)
         {

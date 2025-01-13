@@ -30,19 +30,17 @@ static void RunClient()
     Console.WriteLine("Server already running. Creating connection...");
     var sw = Stopwatch.StartNew();
 
-    using (var conn = new ZyanConnection())
-    {
-        Console.WriteLine($"Connected to server: took {sw.Elapsed.TotalSeconds} seconds to connect.");
-        Console.WriteLine("Creating proxies...");
+    using var conn = new ZyanConnection();
+    Console.WriteLine($"Connected to server: took {sw.Elapsed.TotalSeconds} seconds to connect.");
+    Console.WriteLine("Creating proxies...");
 
-        var config = conn.CreateProxy<IConfigurationServer>();
-        Console.WriteLine("Created the first proxy. Calling its method...");
-        Console.WriteLine("Calling configuration server. Config name: {0}", config.GetConfigName());
+    var config = conn.CreateProxy<IConfigurationServer>();
+    Console.WriteLine("Created the first proxy. Calling its method...");
+    Console.WriteLine("Calling configuration server. Config name: {0}", config.GetConfigName());
 
-        var proxy = conn.CreateProxy<IActionServer>();
-        Console.WriteLine("Created the second proxy. Calling its method...");
-        Console.WriteLine("Calling action server. Executed: {0} -> {1}", "Hello", proxy.ExecuteAction("Hello"));
-    }
+    var proxy = conn.CreateProxy<IActionServer>();
+    Console.WriteLine("Created the second proxy. Calling its method...");
+    Console.WriteLine("Calling action server. Executed: {0} -> {1}", "Hello", proxy.ExecuteAction("Hello"));
 }
 
 // ------------------------------- Server code --------
@@ -51,16 +49,14 @@ static void RunServer()
 {
     var sw = Stopwatch.StartNew();
 
-    using (var host = new ZyanComponentHost())
-    {
-        host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.Singleton);
-        host.RegisterComponent<IActionServer, ActionServer>();
+    using var host = new ZyanComponentHost();
+    host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.Singleton);
+    host.RegisterComponent<IActionServer, ActionServer>();
 
-        Console.Title = "Server";
-        Console.WriteLine($"Server started. Took {sw.Elapsed.TotalSeconds} seconds to start.");
-        Console.WriteLine("Press ENTER to quit.");
-        Console.ReadLine();
-    }
+    Console.Title = "Server";
+    Console.WriteLine($"Server started. Took {sw.Elapsed.TotalSeconds} seconds to start.");
+    Console.WriteLine("Press ENTER to quit.");
+    Console.ReadLine();
 }
 
 internal class ConfigurationServer : IConfigurationServer

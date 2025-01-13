@@ -78,7 +78,7 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
         throw new NotImplementedException("This method is kept for compatibility");
 
     public ServerSession CreateServerSession(RemotingSession rs, IRemotingServer server) =>
-        new ServerSession(rs, server, this);
+        new(rs, server, this);
 
     /// <inheritdoc/>
     public void SetCurrentSession(ServerSession session) =>
