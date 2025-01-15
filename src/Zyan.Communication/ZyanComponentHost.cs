@@ -76,7 +76,7 @@ public partial class ZyanComponentHost : IDisposable
     /// <typeparam name="TInterface">Component interface type</typeparam>
     /// <typeparam name="TService">Component implementation type</typeparam>
     /// <param name="serviceLifetime">Optional component lifetime</param>
-    public ZyanComponentHost RegisterComponent<TInterface, TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped, string uniqueName = "")
+    public ZyanComponentHost RegisterComponent<TInterface, TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton, string uniqueName = "")
         where TInterface : class
         where TService : class, TInterface, new()
     {
