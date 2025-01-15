@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Sockets;
+using CoreRemoting.DependencyInjection;
 using Zyan.Communication;
 
 try
@@ -50,7 +51,7 @@ static void RunServer()
     var sw = Stopwatch.StartNew();
 
     using var host = new ZyanComponentHost();
-    host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ActivationType.Singleton);
+    host.RegisterComponent<IConfigurationServer, ConfigurationServer>(ServiceLifetime.Singleton);
     host.RegisterComponent<IActionServer, ActionServer>();
 
     Console.Title = "Server";

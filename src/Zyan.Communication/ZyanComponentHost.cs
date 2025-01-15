@@ -4,6 +4,7 @@ using CoreRemoting.DependencyInjection;
 using CoreRemoting.Serialization.Binary;
 using Zyan.Communication.DependencyInjection;
 using Zyan.Communication.SessionMgmt;
+using Zyan.Communication.Toolbox;
 
 namespace Zyan.Communication;
 
@@ -16,9 +17,10 @@ public partial class ZyanComponentHost : IDisposable
 
     private RemotingServer RemotingServer { get; set; }
 
-    private IScopedContainer Container { get; set; }
-
     private ISessionManager SessionManager { get; set; }
+
+    private IDependencyInjectionContainer Container =>
+        RemotingServer.ServiceRegistry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ZyanComponentHost" /> class.
@@ -38,10 +40,7 @@ public partial class ZyanComponentHost : IDisposable
 
         SessionManager = sessionManager;
         Config.SessionRepository = sessionManager;
-
-        // make sure we're using the scoped container
-        Config.ScopedContainer = Container =
-            Config.ScopedContainer ?? new DryIocAdapter();
+        Config.DependencyInjectionContainer ??= new DryIocAdapter();
 
         // start up the server as specified in the config
         RemotingServer = new RemotingServer(Config);
@@ -76,13 +75,13 @@ public partial class ZyanComponentHost : IDisposable
     /// </summary>
     /// <typeparam name="TInterface">Component interface type</typeparam>
     /// <typeparam name="TService">Component implementation type</typeparam>
-    /// <param name="lifetime">Optional component lifetime</param>
-    public ZyanComponentHost RegisterComponent<TInterface, TService>(ActivationType lifetime = ActivationType.SingleCall, string uniqueName = "")
+    /// <param name="serviceLifetime">Optional component lifetime</param>
+    public ZyanComponentHost RegisterComponent<TInterface, TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped, string uniqueName = "")
         where TInterface : class
         where TService : class, TInterface, new()
     {
-        var serviceLifetime = lifetime == ActivationType.SingleCall ? ServiceLifetime.SingleCall : ServiceLifetime.Singleton;
         Container.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
+        Container.RegisterQueryableMethods<TInterface, TService>(serviceLifetime, uniqueName);
         return this;
     }
 }

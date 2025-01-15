@@ -11,7 +11,7 @@ namespace Zyan.Communication.DependencyInjection
     /// <summary>
     /// Dependency injection container based on DryIoc container implementation.
     /// </summary>
-    public class DryIocAdapter : DependencyInjectionContainerBase, IDependencyInjectionContainer, IScopedContainer
+    public class DryIocAdapter : DependencyInjectionContainerBase, IDependencyInjectionContainer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DryIocAdapter"/> class.
@@ -56,10 +56,10 @@ namespace Zyan.Communication.DependencyInjection
 
         private static AsyncLocal<IResolverContext> Scope { get; } = new AsyncLocal<IResolverContext>();
 
-        public IDisposable OpenScope(string name = null, bool track = false)
+        public override IDisposable CreateScope()
         {
             var oldValue = Scope.Value;
-            Scope.Value = RootContainer.OpenScope(name, track);
+            Scope.Value = RootContainer.OpenScope();
             return Disposable.Create(() => Scope.Value = oldValue);
         }
     }
