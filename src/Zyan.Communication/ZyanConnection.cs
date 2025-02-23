@@ -20,6 +20,7 @@ public class ZyanConnection : IDisposable
     {
         Config = config ?? new ZyanConnectionConfig();
         Config.Serializer = Config.Serializer ?? new BinarySerializerAdapter();
+        Config.ProxyBuilder = Config.ProxyBuilder ?? new ZyanProxyBuilder(this);
 
         RemotingClient = new RemotingClient(Config);
         if (Config.AutoConnect)

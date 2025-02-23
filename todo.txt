@@ -17,7 +17,7 @@
 - Call context for progress tracking/cancelling
 + Delegate parameters https://gist.github.com/yallie/d39a2e81106dc5572f1e2b5f519510eb
 - Stream parameters (if possible) https://gist.github.com/yallie/7767323
-- DryIoc server side support: server call scope
++ DryIoc server side support: server call scope
 - Server-side MEF component registration
 - Zyan-like authentication provider
 - SRP authorization

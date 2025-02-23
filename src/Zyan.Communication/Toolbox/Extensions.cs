@@ -277,18 +277,25 @@ public static partial class Extensions
         {
             if (mi.IsGenericMethod && mi.GetParameters().Length == 0 && mi.ReturnType.IsGenericType)
             {
-                ////var returnTypeDef = mi.ReturnType.GetGenericTypeDefinition();
-                ////if (returnTypeDef == typeof(IEnumerable<>) || returnTypeDef == typeof(IQueryable<>))
-                ////{
-                ////    container.RegisterService<IQueryRemoteHandler>(() =>
-                ////    {
-                ////        //var queryHandler = new ZyanMethodQueryHandler(container, typeof(TInterface), uniqueName, mi);
-                ////        var remoteHandler = new ZyanServerQueryHandler(queryHandler);
-                ////        return remoteHandler;
-                ////    },
-                ////    lifetime, queryHandler.MethodQueryHandlerName);
-                ////    var svc = container.GetService<TInterface>(uniqueName);
-                ////}
+                var returnTypeDef = mi.ReturnType.GetGenericTypeDefinition();
+                if (returnTypeDef == typeof(IEnumerable<>) || returnTypeDef == typeof(IQueryable<>))
+                {
+                    var componentName = uniqueName;
+                    if (string.IsNullOrWhiteSpace(componentName))
+                    {
+                        componentName = typeof(TInterface).FullName;
+                    }
+
+                    var methodHandlerName = ZyanMethodQueryHandler
+                        .GetMethodQueryHandlerName(componentName, mi);
+
+                    container.RegisterService<IQueryRemoteHandler>(() =>
+                    {
+                        var queryHandler = new ZyanMethodQueryHandler(container, componentName, mi);
+                        return new ZyanServerQueryHandler(queryHandler);
+                    },
+                    lifetime, methodHandlerName);
+                }
             }
         }
 
