@@ -2,14 +2,20 @@
 
 + RPC hello world
 + RPC with events
++ RPC with asynchronous methods
 + Event fails when a client disconnects unexpectedly
 + Exceptions
++ Exceptions in component constructors
 + Exception translation
 + Message encryption on/off
++ Asynchronous transport channel interfaces
++ Replace WebsocketSharp with System.Net.Websockets
 + Session management
 - Session variables
 + ZyanHost events: Before/After/Invoke/Logon/Etc
-- Call interception and caching
++ Support for AuthenticationNotRequired flag
++ Customizable client-side proxies, needed for InterLINQ and interception/caching
+- Method call interception and caching
 - Reconnecting clients after server restart
 - Reconnecting clients after changing the current network
 - Reconnecting clients after short connection loss
@@ -22,7 +28,7 @@
 - Zyan-like authentication provider
 - SRP authorization
 - LINQ-provider, client-side LINQ, GetTable<T>
-- LINQ expression parameters
++ LINQ expression parameters
 - Client-side MEF catalog
 - Method call interception and caching
 - Disconnected and Reconnected events https://gist.github.com/yallie/437ea4c087725693e1c2

@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CallInterception\**" />
+    <EmbeddedResource Remove="CallInterception\**" />
+    <None Remove="CallInterception\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="InterLinq\Expressions\ExpressionSerializationHandler.cs" />
   </ItemGroup>
 

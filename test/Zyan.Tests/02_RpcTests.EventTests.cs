@@ -135,6 +135,8 @@ public partial class RpcTests : TestBase
         // both clients should get all the events
         Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(timeout));
         Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(timeout));
+
+        await Task.Delay(100);
     }
 
     [Fact]
