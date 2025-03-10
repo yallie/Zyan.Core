@@ -47,9 +47,7 @@ public class ZyanConnection : IDisposable
         RemotingClient.Dispose();
 
         // work around the race condition in WatsonTcp's
-        // client disconnection ClientManager.AddClientKicked(guid)
         // see: https://github.com/dotnet/WatsonTcp/issues/303
-        // and: https://github.com/dotnet/WatsonTcp/issues/304
         System.Threading.Thread.Sleep(10);
     }
 

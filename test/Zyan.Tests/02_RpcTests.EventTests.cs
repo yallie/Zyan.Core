@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Xunit;
+using CoreRemoting.DependencyInjection;
 using CoreRemoting.Toolbox;
 using Zyan.Communication;
 using Zyan.Tests.Tools;
@@ -9,10 +10,17 @@ namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    [Fact]
-    public async Task SyncSelfEvent()
+    private const int EventTimeout = 5;
+
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task SyncSelfEvent(ServiceLifetime lifetime)
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
+
         using var conn1 = new ZyanConnection(ConnConfig);
 
         var tcs1 = new TaskCompletionSource<bool>();
@@ -20,15 +28,18 @@ public partial class RpcTests : TestBase
         proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
         proxy1.OnMyEvent();
 
-        var result = await tcs1.Task.Timeout(1);
+        var result = await tcs1.Task.Timeout(EventTimeout);
         Assert.True(result);
     }
 
-    [Fact]
-    public async Task SyncTwoClientEvents()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task SyncTwoClientEvents(ServiceLifetime lifetime)
     {
         using var host = new ZyanComponentHost(HostConfig)
-            .RegisterComponent<IEventServer, EventServer>();
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
 
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
@@ -43,14 +54,19 @@ public partial class RpcTests : TestBase
         proxy2.OnMyEvent();
 
         // both clients should get the event
-        Assert.True(await tcs1.Task.Timeout(1));
-        Assert.True(await tcs2.Task.Timeout(1));
+        Assert.True(await tcs1.Task.Timeout(EventTimeout));
+        Assert.True(await tcs2.Task.Timeout(EventTimeout));
     }
 
-    [Fact]
-    public async Task AsyncSelfEvent()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task AsyncSelfEvent(ServiceLifetime lifetime)
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
+
         using var conn1 = new ZyanConnection(ConnConfig);
 
         var tcs1 = new TaskCompletionSource<bool>();
@@ -58,15 +74,18 @@ public partial class RpcTests : TestBase
         proxy1.MyEvent += (s, e) => tcs1.TrySetResult(true);
         await proxy1.OnMyEventAsync();
 
-        var result = await tcs1.Task.Timeout(1);
+        var result = await tcs1.Task.Timeout(EventTimeout);
         Assert.True(result);
     }
 
-    [Fact]
-    public async Task AsyncTwoClientEvents()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task AsyncTwoClientEvents(ServiceLifetime lifetime)
     {
         using var host = new ZyanComponentHost(HostConfig)
-            .RegisterComponent<IEventServer, EventServer>();
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
 
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
@@ -81,21 +100,23 @@ public partial class RpcTests : TestBase
         await proxy2.OnMyEventAsync();
 
         // both clients should get the event
-        Assert.True(await tcs1.Task.Timeout(1));
-        Assert.True(await tcs2.Task.Timeout(1));
+        Assert.True(await tcs1.Task.Timeout(EventTimeout));
+        Assert.True(await tcs2.Task.Timeout(EventTimeout));
     }
 
-    [Fact]
-    public async Task SyncTwoClientEventsStressTest()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task SyncTwoClientEventsStressTest(ServiceLifetime lifetime)
     {
         using var host = new ZyanComponentHost(HostConfig)
-            .RegisterComponent<IEventServer, EventServer>();
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
 
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 
         var max = 200;
-        var timeout = 5.0;
 
         var cnt1 = new AsyncCounter();
         var proxy1 = conn1.CreateProxy<IEventServer>();
@@ -107,21 +128,23 @@ public partial class RpcTests : TestBase
         proxy2.StressTest(max);
 
         // both clients should get all the events
-        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(timeout));
-        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(timeout));
+        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout));
+        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout));
     }
 
-    [Fact]
-    public async Task AsyncTwoClientEventsStressTest()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task AsyncTwoClientEventsStressTest(ServiceLifetime lifetime)
     {
         using var host = new ZyanComponentHost(HostConfig)
-            .RegisterComponent<IEventServer, EventServer>();
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
 
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
 
         var max = 200;
-        var timeout = 5.0;
 
         var cnt1 = new AsyncCounter();
         var proxy1 = conn1.CreateProxy<IEventServer>();
@@ -133,16 +156,20 @@ public partial class RpcTests : TestBase
         await proxy2.StressTestAsync(max);
 
         // both clients should get all the events
-        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(timeout));
-        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(timeout));
+        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout));
+        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout));
 
         await Task.Delay(100);
     }
 
-    [Fact]
-    public async Task SyncTwoClientEventsShouldWorkWhenClientDisconnects()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task SyncTwoClientEventsShouldWorkWhenClientDisconnects(ServiceLifetime lifetime)
     {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IEventServer, EventServer>();
+        using var host = new ZyanComponentHost(HostConfig)
+            .RegisterComponent<IEventServer, EventServer>(lifetime);
         using var conn2 = new ZyanConnection(ConnConfig);
 
         var cnt1 = new AsyncCounter();
@@ -166,11 +193,14 @@ public partial class RpcTests : TestBase
         Assert.True(cnt2.Value > 0);
     }
 
-    [Fact]
-    public async Task Server_can_register_and_invoke_client_callback_delegates()
+    [Theory]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.SingleCall)]
+    public async Task Server_can_register_and_invoke_client_callback_delegates(ServiceLifetime lifetime)
     {
         using var host = new ZyanComponentHost(HostConfig)
-            .RegisterComponent<ICallbackService, CallbackService>();
+            .RegisterComponent<ICallbackService, CallbackService>(lifetime);
 
         using var conn1 = new ZyanConnection(ConnConfig);
         using var conn2 = new ZyanConnection(ConnConfig);
