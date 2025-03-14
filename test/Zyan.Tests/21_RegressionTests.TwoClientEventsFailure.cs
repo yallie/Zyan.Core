@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CoreRemoting.Channels.Websocket;
-using CoreRemoting.Toolbox;
+using CoreRemoting.Threading;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Tests.Tools;

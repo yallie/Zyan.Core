@@ -1,9 +1,11 @@
 ﻿using CoreRemoting;
 using CoreRemoting.Channels;
+using CoreRemoting.Toolbox;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace Zyan.Communication.SessionMgmt;
 
@@ -43,9 +45,9 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
         SessionRepository.GetSession(sessionId);
 
     /// <inheritdoc/>
-    void ISessionRepository.RemoveSession(Guid sessionId)
+    async Task ISessionRepository.RemoveSession(Guid sessionId)
     {
-        SessionRepository.RemoveSession(sessionId);
+        await SessionRepository.RemoveSession(sessionId);
         if (ServerSessions.TryRemove(sessionId, out var ss))
         {
             ss.Dispose();
@@ -55,8 +57,12 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
     }
 
     /// <inheritdoc/>
+    public ValueTask DisposeAsync() =>
+        SessionRepository.DisposeAsync();
+
+    /// <inheritdoc/>
     public void Dispose() =>
-        SessionRepository.Dispose();
+        DisposeAsync().JustWait();
 
     /// <inheritdoc/>
     private ConcurrentDictionary<Guid, ServerSession> ServerSessions { get; } =
