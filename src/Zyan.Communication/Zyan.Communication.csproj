@@ -19,6 +19,12 @@
     <Compile Remove="InterLinq\Expressions\ExpressionSerializationHandler.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="CallInterception\CallInterceptionData.cs" />
+    <Compile Include="CallInterception\CallInterceptor.cs" />
+    <Compile Include="CallInterception\CallInterceptorCollection.cs" />
+  </ItemGroup>
+
   <!--ItemGroup>
     <PackageReference Include="CoreRemoting" Version="1.2.0" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="8.1.1" />
