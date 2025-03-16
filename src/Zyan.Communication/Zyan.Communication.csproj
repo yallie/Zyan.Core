@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="CallInterception\CallInterceptionDataT.cs" />
     <Compile Include="CallInterception\CallInterceptionData.cs" />
     <Compile Include="CallInterception\CallInterceptor.cs" />
     <Compile Include="CallInterception\CallInterceptorBuilder.cs" />

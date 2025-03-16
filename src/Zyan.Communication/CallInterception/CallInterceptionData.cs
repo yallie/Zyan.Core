@@ -13,10 +13,10 @@ using InvokeRemoteMethodDelegate = Func<IInvocation, MethodInfo, object>;
 public class CallInterceptionData
 {
     // Delegate for remote invocation
-    InvokeRemoteMethodDelegate _remoteInvoker = null;
+    internal InvokeRemoteMethodDelegate _remoteInvoker = null;
 
     // Remoting message invocation
-    IInvocation _methodInvocation = null;
+    internal IInvocation _methodInvocation = null;
 
     /// <summary>
     /// Creates a new instance of the CallInterceptionData class.
@@ -38,23 +38,9 @@ public class CallInterceptionData
     /// <summary>
     /// Makes a remote call.
     /// </summary>
-    /// <returns>Return value of the remotly called method.</returns>
-    public object MakeRemoteCall()
-    {
-        return _remoteInvoker(_methodInvocation, _methodInvocation.Method);
-
-        //var returnMessage = _remoteInvoker(_methodInvocation, _methodInvocation.Method);
-
-        //if (returnMessage != null)
-        //{
-        //    if (returnMessage.Exception != null)
-        //        throw returnMessage.Exception.PreserveStackTrace();
-
-        //    return returnMessage.ReturnValue;
-        //}
-
-        //return null;
-    }
+    /// <returns>Return value of the remotely called method.</returns>
+    public object MakeRemoteCall() =>
+        _remoteInvoker(_methodInvocation, _methodInvocation.Method);
 
     /// <summary>
     /// Proxy caller name.

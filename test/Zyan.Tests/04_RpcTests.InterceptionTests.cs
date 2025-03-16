@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Castle.Windsor.Diagnostics;
-using CoreRemoting;
-using CoreRemoting.Serialization;
-using DryIoc.ImTools;
+﻿using System.Threading.Tasks;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Communication.CallInterception;
@@ -31,7 +26,7 @@ public partial class RpcTests : TestBase
                     return "Goodbye";
                 }
 
-                return data.MakeRemoteCall() as string;
+                return data.MakeRemoteCall();
             }));
 
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -62,7 +57,7 @@ public partial class RpcTests : TestBase
                     return Task.FromResult("Goodbye");
                 }
 
-                return data.MakeRemoteCall() as Task<string>;
+                return data.MakeRemoteCall();
             }));
 
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
