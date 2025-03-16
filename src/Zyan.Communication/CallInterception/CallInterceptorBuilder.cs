@@ -67,8 +67,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), UniqueNameFilter, memberType, memberName, [],
-            data => data.ReturnValue = handler(
-                new CallInterceptionData<T1>(data)));
+            data => data.ReturnValue = handler(data));
     }
 
     /// <summary>
@@ -83,8 +82,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1)],
-            data => handler(
-                data, (T1)data.Parameters[0]));
+            data => handler(data, (T1)data.Parameters[0]));
     }
 
     /// <summary>
@@ -99,8 +97,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1)],
-            data => data.ReturnValue = handler(
-                new CallInterceptionData<T2>(data), (T1)data.Parameters[0]));
+            data => data.ReturnValue = handler(data, (T1)data.Parameters[0]));
     }
 
     /// <summary>
@@ -115,8 +112,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2)],
-            data => handler(
-                data, (T1)data.Parameters[0], (T2)data.Parameters[1]));
+            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1]));
     }
 
     /// <summary>
@@ -131,8 +127,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2)],
-            data => data.ReturnValue = handler(
-                new CallInterceptionData<T3>(data), (T1)data.Parameters[0], (T2)data.Parameters[1]));
+            data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1]));
     }
 
     /// <summary>
@@ -147,8 +142,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3)],
-            data => handler(
-                data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]));
+            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]));
     }
 
     /// <summary>
@@ -163,8 +157,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3)],
-            data => data.ReturnValue = handler(
-                new CallInterceptionData<T4>(data), (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]));
+            data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]));
     }
 
     /// <summary>
@@ -179,8 +172,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3), typeof(T4)],
-            data => handler(
-                data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3]));
+            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3]));
     }
 
     /// <summary>
@@ -195,8 +187,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3), typeof(T4)],
-            data => data.ReturnValue = handler(
-                new CallInterceptionData<T5>(data), (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3]));
+            data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3]));
     }
 
     /// <summary>
@@ -211,8 +202,7 @@ public class CallInterceptorBuilder<T>
         Parse(expression, out var memberType, out var memberName);
 
         return new CallInterceptor(typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)],
-            data => handler(
-                data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3], (T5)data.Parameters[4]));
+            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2], (T4)data.Parameters[3], (T5)data.Parameters[4]));
     }
 
     /// <summary>

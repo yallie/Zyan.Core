@@ -46,9 +46,7 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [], handler)
@@ -62,18 +60,16 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptorHelper<T> Add<T1>(Expression<Func<T, T1>> expression, Func<CallInterceptionData, T1> handler)
+    public CallInterceptorHelper<T> Add<T1>(Expression<Func<T, T1>> expression, Func<CallInterceptionData<T1>, T1> handler)
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [],
-            data => data.ReturnValue = handler(data))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => data.ReturnValue = handler(data))
+                    .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -87,14 +83,12 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [typeof(T1)],
-            data => handler(data, (T1)data.Parameters[0]))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => handler(data, (T1)data.Parameters[0]))
+                    .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -104,18 +98,17 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptorHelper<T> Add<T1, T2>(Expression<Func<T, T1, T2>> expression, Func<CallInterceptionData, T1, T2> handler)
+    public CallInterceptorHelper<T> Add<T1, T2>(Expression<Func<T, T1, T2>> expression, Func<CallInterceptionData<T2>, T1, T2> handler)
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [typeof(T1)],
-            data => data.ReturnValue = handler(data, (T1)data.Parameters[0]))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => data.ReturnValue = handler(
+                    data, (T1)data.Parameters[0]))
+                        .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -129,14 +122,12 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [typeof(T1), typeof(T2)],
-            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1]))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1]))
+                    .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -146,18 +137,17 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptorHelper<T> Add<T1, T2, T3>(Expression<Func<T, T1, T2, T3>> expression, Func<CallInterceptionData, T1, T2, T3> handler)
+    public CallInterceptorHelper<T> Add<T1, T2, T3>(Expression<Func<T, T1, T2, T3>> expression, Func<CallInterceptionData<T3>, T1, T2, T3> handler)
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(typeof(T),
             memberType, memberName, [typeof(T1), typeof(T2)],
-            data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1]))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => data.ReturnValue = handler(
+                    data, (T1)data.Parameters[0], (T2)data.Parameters[1]))
+                        .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -171,14 +161,12 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3)],
-            data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]))
-                .WithUniqueNameFilter(UniqueNameFilter));
+                data => handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]))
+                    .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
@@ -188,18 +176,16 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptorHelper<T> Add<T1, T2, T3, T4>(Expression<Func<T, T1, T2, T3, T4>> expression, Func<CallInterceptionData, T1, T2, T3, T4> handler)
+    public CallInterceptorHelper<T> Add<T1, T2, T3, T4>(Expression<Func<T, T1, T2, T3, T4>> expression, Func<CallInterceptionData<T4>, T1, T2, T3, T4> handler)
     {
         CheckNotNull(handler);
 
-        MemberTypes memberType;
-        string memberName;
-        Parse(expression, out memberType, out memberName);
+        Parse(expression, out var memberType, out var memberName);
 
         Interceptors.Add(new CallInterceptor(
             typeof(T), memberType, memberName, [typeof(T1), typeof(T2), typeof(T3)],
-            data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]))
-            .WithUniqueNameFilter(UniqueNameFilter));
+                data => data.ReturnValue = handler(data, (T1)data.Parameters[0], (T2)data.Parameters[1], (T3)data.Parameters[2]))
+                    .WithUniqueNameFilter(UniqueNameFilter));
 
         return this;
     }
