@@ -74,11 +74,9 @@ public class CallInterceptorCollection : ConcurrentCollection<CallInterceptor>
 	private string GetTypeList(ParameterInfo[] parameters) =>
 		string.Join("|", parameters.Select(p => p.ParameterType.FullName).ToArray());
 
-	///// <summary>
-	///// Creates call interceptor helper for the given interface.
-	///// </summary>
-	//public CallInterceptorHelper<T> For<T>()
-	//{
-	//	return new CallInterceptorHelper<T>(this);
-	//}
+    /// <summary>
+    /// Creates call interceptor helper for the given interface.
+    /// </summary>
+    public CallInterceptorHelper<T> For<T>() =>
+        new CallInterceptorHelper<T>(this);
 }

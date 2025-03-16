@@ -121,29 +121,25 @@ public class CallInterceptor
     /// </summary>
     public static bool IsPaused => isPaused.Value;
 
-	/// <summary>
-	/// Returns strong-typed call interceptor builder for the component with the specified interface.
-	/// </summary>
-	/// <typeparam name="TInterface">Component interface.</typeparam>
-	//public static CallInterceptorBuilder<TInterface> For<TInterface>()
-	//{
-	//	return new CallInterceptorBuilder<TInterface>();
-	//}
+    /// <summary>
+    /// Returns strong-typed call interceptor builder for the component with the specified interface.
+    /// </summary>
+    /// <typeparam name="TInterface">Component interface.</typeparam>
+    public static CallInterceptorBuilder<TInterface> For<TInterface>() =>
+        new CallInterceptorBuilder<TInterface>();
 
-	///// <summary>
-	///// Returns strong-typed call interceptor builder for the component with the specified interface.
-	///// </summary>
-	///// <typeparam name="TInterface">Component interface.</typeparam>
-	///// <param name="uniqueName">Unique name of the component.</param>
-	//public static CallInterceptorBuilder<TInterface> For<TInterface>(string uniqueName)
-	//{
-	//	return new CallInterceptorBuilder<TInterface>(uniqueName);
-	//}
+    /// <summary>
+    /// Returns strong-typed call interceptor builder for the component with the specified interface.
+    /// </summary>
+    /// <typeparam name="TInterface">Component interface.</typeparam>
+    /// <param name="uniqueName">Unique name of the component.</param>
+    public static CallInterceptorBuilder<TInterface> For<TInterface>(string uniqueName) =>
+        new CallInterceptorBuilder<TInterface>(uniqueName);
 
-	/// <summary>
-	/// Returns a <see cref="System.String" /> that represents this instance.
-	/// </summary>
-	public override string ToString()
+    /// <summary>
+    /// Returns a <see cref="System.String" /> that represents this instance.
+    /// </summary>
+    public override string ToString()
 	{
 		var parameters = string.Join(", ", (ParameterTypes ?? []).Select(t => t.Name).ToArray());
 		if (!string.IsNullOrEmpty(parameters))

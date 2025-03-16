@@ -22,7 +22,9 @@
   <ItemGroup>
     <Compile Include="CallInterception\CallInterceptionData.cs" />
     <Compile Include="CallInterception\CallInterceptor.cs" />
+    <Compile Include="CallInterception\CallInterceptorBuilder.cs" />
     <Compile Include="CallInterception\CallInterceptorCollection.cs" />
+    <Compile Include="CallInterception\CallInterceptorHelper.cs" />
   </ItemGroup>
 
   <!--ItemGroup>
