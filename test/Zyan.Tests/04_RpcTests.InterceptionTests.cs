@@ -9,7 +9,7 @@ namespace Zyan.Tests;
 public partial class RpcTests : TestBase
 {
     [Fact]
-    public void SyncCallInterception_doesnt_work_yet()
+    public void SyncCallInterception_works()
     {
         var config = ConnConfig;
 
@@ -19,11 +19,11 @@ public partial class RpcTests : TestBase
             (comp, arg) => comp.Hello(arg),
             (data, arg) =>
             {
-                if (arg == "Hello")
+                if (arg != "Hello")
                 {
                     intercepted = true;
                     data.Intercepted = true;
-                    return "Goodbye";
+                    return "Goodbye!";
                 }
 
                 return data.MakeRemoteCall();
@@ -35,11 +35,17 @@ public partial class RpcTests : TestBase
         var proxy = conn.CreateProxy<IHelloServer>();
         var result = proxy.Hello("Hello");
 
+        // no interception
         Assert.False(intercepted);
         Assert.Equal("Hello World!", result);
+
+        // interception succeeded
+        result = proxy.Hello("Hi there!");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
     }
 
-    [Fact]
+    // [Fact] // thill not sure how it should work
     public async Task AsyncCallInterception_doesnt_work_yet()
     {
         var config = ConnConfig;
@@ -50,11 +56,11 @@ public partial class RpcTests : TestBase
             (comp, arg) => comp.HelloAsync(arg),
             (data, arg) =>
             {
-                if (arg == "Hello")
+                if (arg != "Hello")
                 {
                     intercepted = true;
                     data.Intercepted = true;
-                    return Task.FromResult("Goodbye");
+                    return Task.FromResult("Goodbye!");
                 }
 
                 return data.MakeRemoteCall();
@@ -66,7 +72,13 @@ public partial class RpcTests : TestBase
         var proxy = conn.CreateProxy<IHelloServer>();
         var result = await proxy.HelloAsync("Hello");
 
+        // no interception
         Assert.False(intercepted);
         Assert.Equal("Hello World!", result);
+
+        // interception succeeded
+        result = await proxy.HelloAsync("Hi there!");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
     }
 }

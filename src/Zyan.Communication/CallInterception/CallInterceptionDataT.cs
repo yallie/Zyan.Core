@@ -1,9 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Castle.DynamicProxy;
-using BaseCallInterceptionData = Zyan.Communication.CallInterception.CallInterceptionData;
-
-namespace Zyan.Communication.CallInterception;
+﻿namespace Zyan.Communication.CallInterception;
 
 /// <summary>
 /// Describes a single call interception action.
@@ -11,14 +6,9 @@ namespace Zyan.Communication.CallInterception;
 public class CallInterceptionData<T>
 {
     /// <summary>
-    /// Creates a new instance of the CallInterceptionData{T} class.
-    /// </summary>
-    public CallInterceptionData(BaseCallInterceptionData data) => Data = data;
-
-    /// <summary>
     /// Actual call interception data.
     /// </summary>
-    public BaseCallInterceptionData Data { get; private set; }
+    public CallInterceptionData Data { get; private set; }
 
     /// <summary>
     /// Gets or sets a value whether the remote call is intercepted.
@@ -38,14 +28,16 @@ public class CallInterceptionData<T>
     public T MakeRemoteCall() => (T)Data.MakeRemoteCall();
 
     /// <summary>
-    /// Implicit conversion operator for <see cref="BaseCallInterceptionData"/>.
+    /// Implicit conversion operator for <see cref="CallInterceptionData"/>.
     /// </summary>
-    public static implicit operator CallInterceptionData<T>(BaseCallInterceptionData data) =>
-        new CallInterceptionData<T>(data);
+    public static implicit operator CallInterceptionData<T>(CallInterceptionData data) => new ()
+    {
+        Data = data,
+    };
 
     /// <summary>
     /// Implicit conversion operator for <see cref="CallInterceptionData{T}"/>.
     /// </summary>
-    public static implicit operator BaseCallInterceptionData(CallInterceptionData<T> data) =>
+    public static implicit operator CallInterceptionData(CallInterceptionData<T> data) =>
         data.Data;
 }

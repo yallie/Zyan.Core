@@ -49,7 +49,8 @@ public class CallInterceptorCollection : ConcurrentCollection<CallInterceptor>
     /// <param name="uniqueName">Unique name of the intercepted component.</param>
     /// <param name="remotingMessage">Remoting message from proxy</param>
     /// <returns>Call interceptor or null</returns>
-    public CallInterceptor FindMatchingInterceptor(Type interfaceType, string uniqueName, IInvocation invocation)
+    public CallInterceptor FindMatchingInterceptor(Type interfaceType, string uniqueName,
+        MemberTypes memberType, string memberName, ParameterInfo[] memberParameters)
     {
         if (Count == 0)
             return null;
@@ -58,9 +59,9 @@ public class CallInterceptorCollection : ConcurrentCollection<CallInterceptor>
             .Where(ic => ic.Enabled)
             .Where(ic => ic.IsNameMatch(uniqueName))
             .Where(ic => Equals(ic.InterfaceType, interfaceType))
-            .Where(ic => ic.MemberType == invocation.Method.MemberType)
-            .Where(ic => ic.MemberName == invocation.Method.Name)
-            .Where(ic => GetTypeList(ic.ParameterTypes) == GetTypeList(invocation.Method.GetParameters()));
+            .Where(ic => ic.MemberType == memberType)
+            .Where(ic => ic.MemberName == memberName)
+            .Where(ic => GetTypeList(ic.ParameterTypes) == GetTypeList(memberParameters));
 
         lock (SyncRoot)
         {

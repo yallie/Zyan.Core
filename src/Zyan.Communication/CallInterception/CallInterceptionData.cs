@@ -1,46 +1,32 @@
 ﻿using System;
-using System.Reflection;
-using Castle.DynamicProxy;
 
 namespace Zyan.Communication.CallInterception;
-
-// Delegate for remote method invocation.
-using InvokeRemoteMethodDelegate = Func<IInvocation, MethodInfo, object>;
 
 /// <summary>
 /// Describes a single call interception action.
 /// </summary>
 public class CallInterceptionData
 {
-    // Delegate for remote invocation
-    internal InvokeRemoteMethodDelegate _remoteInvoker = null;
-
-    // Remoting message invocation
-    internal IInvocation _methodInvocation = null;
-
     /// <summary>
     /// Creates a new instance of the CallInterceptionData class.
     /// </summary>
     /// <param name="invokerName">Inform interceptor about proxy unique name.</param>
     /// <param name="parameters">Parameter values of the intercepted call</param>
     /// <param name="remoteInvoker">Delegate for remote invocation</param>
-    /// <param name="methodInvocation">Remoting method invocation</param>
-    public CallInterceptionData(string invokerName, object[] parameters, InvokeRemoteMethodDelegate remoteInvoker, IInvocation methodInvocation)
+    public CallInterceptionData(string invokerName, object[] parameters, Func<object> remoteInvoker)
     {
         InvokerUniqueName = invokerName;
         Intercepted = false;
         ReturnValue = null;
         Parameters = parameters;
-        _remoteInvoker = remoteInvoker;
-        _methodInvocation = methodInvocation;
+        MakeRemoteCall = remoteInvoker;
     }
 
     /// <summary>
     /// Makes a remote call.
     /// </summary>
     /// <returns>Return value of the remotely called method.</returns>
-    public object MakeRemoteCall() =>
-        _remoteInvoker(_methodInvocation, _methodInvocation.Method);
+    public Func<object> MakeRemoteCall { get; }
 
     /// <summary>
     /// Proxy caller name.
