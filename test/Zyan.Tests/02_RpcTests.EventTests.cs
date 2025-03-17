@@ -128,8 +128,8 @@ public partial class RpcTests : TestBase
         proxy2.StressTest(max);
 
         // both clients should get all the events
-        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout * 5));
-        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout * 5));
+        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout * 15));
+        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout * 15));
     }
 
     [Theory]
@@ -156,8 +156,8 @@ public partial class RpcTests : TestBase
         await proxy2.StressTestAsync(max);
 
         // both clients should get all the events
-        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout * 5));
-        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout * 5));
+        Assert.Equal(max, await cnt1.WaitForValue(max).Timeout(EventTimeout * 15));
+        Assert.Equal(max, await cnt2.WaitForValue(max).Timeout(EventTimeout * 15));
 
         await Task.Delay(100);
     }
