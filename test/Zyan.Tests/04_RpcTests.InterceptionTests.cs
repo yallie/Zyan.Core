@@ -9,7 +9,7 @@ namespace Zyan.Tests;
 public partial class RpcTests : TestBase
 {
     [Fact]
-    public void SyncCallInterception_works()
+    public void SyncCallInterception_works_and_supports_PauseInterception()
     {
         var config = ConnConfig;
 
@@ -43,10 +43,24 @@ public partial class RpcTests : TestBase
         result = proxy.Hello("Hi there!");
         Assert.True(intercepted);
         Assert.Equal("Goodbye!", result);
+
+        // interception is paused
+        intercepted = false;
+        using (CallInterceptor.PauseInterception())
+        {
+            result = proxy.Hello("Hi there");
+            Assert.False(intercepted);
+            Assert.Equal("Hi there World!", result);
+        }
+
+        // interception unpaused
+        result = proxy.Hello("Anybody?");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
     }
 
-    // [Fact] // thill not sure how it should work
-    public async Task AsyncCallInterception_doesnt_work_yet()
+    [Fact]
+    public async Task AsyncCallInterception_works_and_supports_PauseInterception()
     {
         var config = ConnConfig;
 
@@ -63,7 +77,8 @@ public partial class RpcTests : TestBase
                     return Task.FromResult("Goodbye!");
                 }
 
-                return data.MakeRemoteCall();
+                var task = data.MakeRemoteCall();
+                return task;
             }));
 
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
@@ -78,6 +93,20 @@ public partial class RpcTests : TestBase
 
         // interception succeeded
         result = await proxy.HelloAsync("Hi there!");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
+
+        // interception is paused
+        intercepted = false;
+        using (CallInterceptor.PauseInterception())
+        {
+            result = await proxy.HelloAsync("Hi there");
+            Assert.False(intercepted);
+            Assert.Equal("Hi there World!", result);
+        }
+
+        // interception unpaused
+        result = await proxy.HelloAsync("Anybody?");
         Assert.True(intercepted);
         Assert.Equal("Goodbye!", result);
     }

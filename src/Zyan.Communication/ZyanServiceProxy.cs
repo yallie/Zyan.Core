@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using CoreRemoting;
 using stakx.DynamicProxy;
 using Zyan.Communication.CallInterception;
+using Zyan.Communication.Toolbox;
 
 namespace Zyan.Communication;
 
@@ -36,8 +38,9 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
             return invocation.ReturnValue;
         }
 
+        // handle call interception
         var cfg = Connection.Config;
-        if (cfg.EnableCallInterception)
+        if (cfg.EnableCallInterception && cfg.CallInterceptors.Count > 0 && !CallInterceptor.IsPaused)
         {
             var interceptor = cfg.CallInterceptors.FindMatchingInterceptor(
                 ServiceInterfaceType, ServiceName,
@@ -64,20 +67,100 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
     }
 
     /// <summary>
+    /// Helper class to convert an asynchronous interception into a Func{object} delegate.
+    /// </summary>
+    /// <param name="interceptAsync">Async interception method, i.e. base.InterceptAsync</param>
+    /// <param name="invocation">Asynchronous invocation parameters.</param>
+    private class AsyncInvocationHelper(Func<IAsyncInvocation, ValueTask> interceptAsync, IAsyncInvocation invocation)
+    {
+        /// <summary>
+        /// Actual method that performs a remote invocation.
+        /// </summary>
+        private async Task<object> InvokeRemoteMethod()
+        {
+            await interceptAsync(invocation);
+            return invocation.Result;
+        }
+
+        /// <summary>
+        /// Async invocation method that returns a parameterless Task.
+        /// Used for wrapping methods with return type of Task.
+        /// This method can be saved as a delegate of type Func{object}.
+        /// </summary>
+        private async Task InvokeReturnTask()
+        {
+            await InvokeRemoteMethod();
+        }
+
+        /// <summary>
+        /// Async invocation method that returns a parameterized Task.
+        /// Used for wrapping methods with return type of Task{T}.
+        /// This method can be saved as a delegate of type Func{object}.
+        /// </summary>
+        private async Task<TResult> InvokeReturnTaskT<TResult>()
+        {
+            var result = await InvokeRemoteMethod();
+            return (TResult)result;
+        }
+
+        public Func<object> GetMakeRemoteCallFunction(Type taskType)
+        {
+            if (taskType == typeof(void) || taskType == typeof(Task))
+            {
+                // create InvokeFuncReturnTask as Func<object>
+                var makeRemoteCall = new Func<object>(InvokeReturnTask);
+                return makeRemoteCall;
+            }
+
+            if (taskType.IsGenericType && taskType.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                // get TResult type from Task<TResult>
+                var taskReturnType = taskType.GetGenericArguments().First();
+
+                // create InvokeFuncReturnTaskT<TResult> as Func<object>
+                var genericMethod = new Func<object>(InvokeReturnTaskT<int>).Method;
+                var invokeMethod = genericMethod.GetGenericMethodDefinition().MakeGenericMethod(taskReturnType);
+                var invokeFunction = invokeMethod.CreateDelegate<Func<object>>(this);
+                return invokeFunction;
+            }
+
+            throw new NotSupportedException($"Return type not supported: {taskType.Name}");
+        }
+
+        public object GetTaskResult(object taskValue)
+        {
+            if (taskValue == null || taskValue.GetType() == typeof(Task))
+            {
+                return null;
+            }
+
+            if (taskValue is Task &&
+                taskValue.GetType() is Type taskType &&
+                taskType.IsGenericType &&
+                taskType.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                var resultInfo = taskType.GetProperty(nameof(Task<int>.Result));
+                var result = resultInfo.GetValue(taskValue);
+                return result;
+            }
+
+            // throw new NotSupportedException($"Task result type not supported: {taskValue.GetType().Name}");
+            return taskValue;
+        }
+    }
+
+    /// <summary>
     /// Intercepts an asynchronous call of a member on the proxy object.
     /// </summary>
     protected override async ValueTask InterceptAsync(IAsyncInvocation invocation)
     {
-        // not sure how to handle it
-        async Task MakeRemoteCallAsync() =>
-            await base.InterceptAsync(invocation);
-
-        object MakeRemoteCall() =>
-            MakeRemoteCallAsync();
-
+        // handle call interception
         var cfg = Connection.Config;
-        if (cfg.EnableCallInterception)
+        if (cfg.EnableCallInterception && cfg.CallInterceptors.Count > 0 && !CallInterceptor.IsPaused)
         {
+            var helper = new AsyncInvocationHelper(base.InterceptAsync, invocation);
+            var makeRemoteCall = helper.GetMakeRemoteCallFunction(invocation.Method.ReturnType);
+
             var interceptor = cfg.CallInterceptors.FindMatchingInterceptor(
                 ServiceInterfaceType, ServiceName,
                 invocation.Method.MemberType, invocation.Method.Name,
@@ -86,12 +169,12 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
             if (interceptor != null)
             {
                 var data = new CallInterceptionData(ServiceName,
-                    invocation.Arguments.ToArray(), MakeRemoteCall);
+                    invocation.Arguments.ToArray(), makeRemoteCall);
 
                 interceptor.OnInterception(data);
                 if (data.Intercepted)
                 {
-                    invocation.Result = data.ReturnValue;
+                    invocation.Result = helper.GetTaskResult(data.ReturnValue);
                     return;
                 }
             }

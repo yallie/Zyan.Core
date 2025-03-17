@@ -55,7 +55,6 @@ public class CallInterceptor
     /// Compare unique name via regex.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns></returns>
     public bool IsNameMatch(string name)
     {
         // performance optimization
@@ -114,7 +113,7 @@ public class CallInterceptor
         return Disposable.Create(() => isPaused.Value = oldValue);
     }
 
-    internal static AsyncLocal<bool> isPaused;
+    internal static AsyncLocal<bool> isPaused = new();
 
     /// <summary>
     /// Gets or sets a value indicating whether call interception is paused for the current thread.
@@ -136,9 +135,7 @@ public class CallInterceptor
     public static CallInterceptorBuilder<TInterface> For<TInterface>(string uniqueName) =>
         new CallInterceptorBuilder<TInterface>(uniqueName);
 
-    /// <summary>
-    /// Returns a <see cref="System.String" /> that represents this instance.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var parameters = string.Join(", ", (ParameterTypes ?? []).Select(t => t.Name).ToArray());
