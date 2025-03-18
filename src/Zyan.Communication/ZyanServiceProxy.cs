@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using CoreRemoting;
@@ -32,6 +33,14 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
     /// <param name="invocation">Intercepted invocation details</param>
     protected override void Intercept(IInvocation invocation)
     {
+        if (HandleCallInterception(invocation))
+            return;
+
+        base.Intercept(invocation);
+    }
+
+    private bool HandleCallInterception(IInvocation invocation)
+    {
         // handle call interception
         var cfg = Connection.Config;
         if (cfg.EnableCallInterception && cfg.CallInterceptors.Count > 0 && !CallInterceptor.IsPaused)
@@ -56,14 +65,14 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
                 if (data.Intercepted)
                 {
                     invocation.ReturnValue = data.ReturnValue;
-                    return;
+                    return true;
                 }
             }
         }
 
         // interception disabled, interceptor not found,
         // or the handler didn't intercept the invocation
-        base.Intercept(invocation);
+        return false;
     }
 
     /// <summary>
@@ -127,25 +136,32 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
             throw new NotSupportedException($"Return type not supported: {taskType.Name}");
         }
 
-        public object GetTaskResult(object taskValue)
+        public async Task<object> GetTaskResult(object taskValue)
         {
             if (taskValue == null || taskValue.GetType() == typeof(Task))
             {
+                // run to completion
+                if (taskValue is Task task)
+                    await task;
+
                 return null;
             }
 
-            if (taskValue is Task &&
+            if (taskValue is Task taskWithResult &&
                 taskValue.GetType() is Type taskType &&
                 taskType.IsGenericType &&
-                taskType.GetGenericTypeDefinition() == typeof(Task<>))
+                taskType.GetProperty(nameof(Task<int>.Result)) is PropertyInfo resultInfo)
             {
-                var resultInfo = taskType.GetProperty(nameof(Task<int>.Result));
+                // run to completion
+                await taskWithResult;
+
+                // get result
                 var result = resultInfo.GetValue(taskValue);
                 return result;
             }
 
-            // throw new NotSupportedException($"Task result type not supported: {taskValue.GetType().Name}");
-            return taskValue;
+            throw new NotSupportedException($"Task result type not supported: {taskValue.GetType().Name}");
+            //return taskValue;
         }
     }
 
@@ -153,6 +169,14 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
     /// Intercepts an asynchronous call of a member on the proxy object.
     /// </summary>
     protected override async ValueTask InterceptAsync(IAsyncInvocation invocation)
+    {
+        if (await HandleCallInterception(invocation))
+            return;
+
+        await base.InterceptAsync(invocation);
+    }
+
+    private async Task<bool> HandleCallInterception(IAsyncInvocation invocation)
     {
         // handle call interception
         var cfg = Connection.Config;
@@ -174,14 +198,14 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
                 interceptor.OnInterception(data);
                 if (data.Intercepted)
                 {
-                    invocation.Result = helper.GetTaskResult(data.ReturnValue);
-                    return;
+                    invocation.Result = await helper.GetTaskResult(data.ReturnValue);
+                    return true;
                 }
             }
         }
 
         // interception disabled, interceptor not found,
         // or the handler didn't intercept the invocation
-        await base.InterceptAsync(invocation);
+        return false;
     }
 }

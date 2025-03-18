@@ -5,36 +5,40 @@ namespace Zyan.Tests.Tools;
 
 internal class HelloServer : IHelloServer
 {
-	public string Hello(string hello) => hello + " World!";
+    public string Hello(string hello) => hello + " World!";
 
-	public async Task<string> HelloAsync(string hello)
-	{
-		await Task.Delay(1);
-		return Hello(hello);
-	}
-	public void Error(string msg) => throw new Exception(msg);
+    public async Task<string> HelloAsync(string hello) =>
+        await HelloValueTaskAsync(hello);
 
-	public async Task ErrorAsync(string msg)
-	{
-		await Task.Delay(1);
-		Error(msg);
-	}
+    public async ValueTask<string> HelloValueTaskAsync(string hello)
+    {
+        await Task.Delay(1);
+        return Hello(hello);
+    }
 
-	private class NonSerializable : Exception
-	{
-		public NonSerializable(string message)
-			: base(message)
-		{
-		}
-	}
+    public void Error(string msg) => throw new Exception(msg);
 
-	public void NonSerializableError(string msg, params string[] data)
-	{
-		var ex = new NonSerializable(msg);
+    public async Task ErrorAsync(string msg)
+    {
+        await Task.Delay(1);
+        Error(msg);
+    }
 
-		foreach (var item in data)
-			ex.Data[item] = item;
+    private class NonSerializable : Exception
+    {
+        public NonSerializable(string message)
+            : base(message)
+        {
+        }
+    }
 
-		throw ex;
-	}
+    public void NonSerializableError(string msg, params string[] data)
+    {
+        var ex = new NonSerializable(msg);
+
+        foreach (var item in data)
+            ex.Data[item] = item;
+
+        throw ex;
+    }
 }
