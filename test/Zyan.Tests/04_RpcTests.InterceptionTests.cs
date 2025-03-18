@@ -412,4 +412,103 @@ public partial class RpcTests : TestBase
         Assert.True(gotFromCache);
         Assert.Equal("Goodbye World!", result);
     }
+
+    [Fact]
+    public void SyncCallInterception_works_with_alternative_syntax()
+    {
+        var config = ConnConfig;
+
+        var intercepted = false;
+        config.CallInterceptors.For<IHelloServer>().Add<string, string>(
+            (c, s) => c.Hello(s),
+            (data, arg) =>
+            {
+                if (arg != "Hello")
+                {
+                    data.Intercepted = intercepted = true;
+                    return "Goodbye!";
+                }
+
+                return data.MakeRemoteCall();
+            });
+
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(config);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = proxy.Hello("Hello");
+
+        // no interception
+        Assert.False(intercepted);
+        Assert.Equal("Hello World!", result);
+
+        // interception succeeded
+        result = proxy.Hello("Hi there!");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
+
+        // interception is paused
+        intercepted = false;
+        using (CallInterceptor.PauseInterception())
+        {
+            result = proxy.Hello("Hi there");
+            Assert.False(intercepted);
+            Assert.Equal("Hi there World!", result);
+        }
+
+        // interception unpaused
+        result = proxy.Hello("Anybody?");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
+    }
+
+    [Fact]
+    public async Task AsyncCallInterception_works_with_alternative_syntax()
+    {
+        var config = ConnConfig;
+
+        // the incerceptor is synchronous, but returns Task<string>
+        var intercepted = false;
+        config.CallInterceptors.For<IHelloServer>().Add<string, Task<string>>(
+            (comp, arg) => comp.HelloAsync(arg),
+            async (data, arg) =>
+            {
+                if (arg != "Hello")
+                {
+                    data.Intercepted = intercepted = true;
+                    return "Goodbye!";
+                }
+
+                return await data.MakeRemoteCall();
+            });
+
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(config);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = await proxy.HelloAsync("Hello");
+
+        // no interception
+        Assert.False(intercepted);
+        Assert.Equal("Hello World!", result);
+
+        // interception succeeded
+        result = await proxy.HelloAsync("Hi there!");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
+
+        // interception is paused
+        intercepted = false;
+        using (CallInterceptor.PauseInterception())
+        {
+            result = await proxy.HelloAsync("Hi there");
+            Assert.False(intercepted);
+            Assert.Equal("Hi there World!", result);
+        }
+
+        // interception unpaused
+        result = await proxy.HelloAsync("Anybody?");
+        Assert.True(intercepted);
+        Assert.Equal("Goodbye!", result);
+    }
 }
