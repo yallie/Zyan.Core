@@ -306,17 +306,16 @@ public partial class RpcTests : TestBase
         var config = ConnConfig;
         var resultCache = new ConcurrentDictionary<string, string>();
 
-        var intercepted = false;
+        var gotFromCache = false;
         config.CallInterceptors.Add(
             CallInterceptor.For<IHelloServer>().Func<string, string>(
             (comp, arg) => comp.Hello(arg),
             (data, arg) =>
             {
-                if (resultCache.TryGetValue(arg, out var result))
-                {
-                    data.Intercepted = intercepted = true;
+                data.Intercepted = true;
+
+                if (gotFromCache = resultCache.TryGetValue(arg, out var result))
                     return result;
-                }
 
                 return resultCache[arg] = data.MakeRemoteCall();
             }));
@@ -328,27 +327,31 @@ public partial class RpcTests : TestBase
         var result = proxy.Hello("Hello");
 
         // no interception
-        Assert.False(intercepted);
+        Assert.False(gotFromCache);
         Assert.Equal("Hello World!", result);
 
         // interception succeeded
         result = proxy.Hello("Hello");
-        Assert.True(intercepted);
+        Assert.True(gotFromCache);
         Assert.Equal("Hello World!", result);
 
         // interception is paused
-        intercepted = false;
         using (CallInterceptor.PauseInterception())
         {
+            gotFromCache = false;
             result = proxy.Hello("Hi there");
-            Assert.False(intercepted);
+            Assert.False(gotFromCache);
             Assert.Equal("Hi there World!", result);
         }
 
-        // interception unpaused
-        intercepted = false;
+        // interception unpaused: result not cached
         result = proxy.Hello("Goodbye");
-        Assert.False(intercepted);
+        Assert.False(gotFromCache);
+        Assert.Equal("Goodbye World!", result);
+
+        // result is cached
+        result = proxy.Hello("Goodbye");
+        Assert.True(gotFromCache);
         Assert.Equal("Goodbye World!", result);
     }
 
@@ -358,15 +361,16 @@ public partial class RpcTests : TestBase
         var config = ConnConfig;
         var resultCache = new ConcurrentDictionary<string, string>();
 
-        var intercepted = false;
+        var gotFromCache = false;
         config.CallInterceptors.Add(
             CallInterceptor.For<IHelloServer>().Func<string, Task<string>>(
             (comp, arg) => comp.HelloAsync(arg),
             async (data, arg) =>
             {
-                if (resultCache.TryGetValue(arg, out var result))
+                data.Intercepted = true;
+
+                if (gotFromCache = resultCache.TryGetValue(arg, out var result))
                 {
-                    data.Intercepted = intercepted = true;
                     await Task.Yield();
                     return result;
                 }
@@ -381,27 +385,31 @@ public partial class RpcTests : TestBase
         var result = await proxy.HelloAsync("Hello");
 
         // no interception
-        Assert.False(intercepted);
+        Assert.False(gotFromCache);
         Assert.Equal("Hello World!", result);
 
         // interception succeeded
         result = await proxy.HelloAsync("Hello");
-        Assert.True(intercepted);
+        Assert.True(gotFromCache);
         Assert.Equal("Hello World!", result);
 
         // interception is paused
-        intercepted = false;
         using (CallInterceptor.PauseInterception())
         {
+            gotFromCache = false;
             result = await proxy.HelloAsync("Hi there");
-            Assert.False(intercepted);
+            Assert.False(gotFromCache);
             Assert.Equal("Hi there World!", result);
         }
 
-        // interception unpaused
-        intercepted = false;
+        // interception unpaused: no cached result
         result = await proxy.HelloAsync("Goodbye");
-        Assert.False(intercepted);
+        Assert.False(gotFromCache);
+        Assert.Equal("Goodbye World!", result);
+
+        // result is cached
+        result = await proxy.HelloAsync("Goodbye");
+        Assert.True(gotFromCache);
         Assert.Equal("Goodbye World!", result);
     }
 }
