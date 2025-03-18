@@ -1,5 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using CoreRemoting.Threading;
+using CoreRemoting.Toolbox;
 using Xunit;
 using Zyan.Communication;
 using Zyan.Communication.CallInterception;
@@ -510,5 +513,85 @@ public partial class RpcTests : TestBase
         result = await proxy.HelloAsync("Anybody?");
         Assert.True(intercepted);
         Assert.Equal("Goodbye!", result);
+    }
+
+    [Fact]
+    public async Task SyncCallInterception_works_for_Action()
+    {
+        var config = ConnConfig;
+        var callbackEnabled = true;
+        var callbackCounter = new AsyncCounter();
+
+        config.CallInterceptors.Add(
+            CallInterceptor.For<ICallbackService>().Action(
+            svc => svc.DoCallback(),
+            data => data.Intercepted = !callbackEnabled));
+
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<ICallbackService, CallbackService>();
+        using var conn = new ZyanConnection(config);
+
+        var proxy = conn.CreateProxy<ICallbackService>();
+        proxy.RegisterCallback(() => callbackCounter.Increment());
+
+        // no interception
+        Assert.True(callbackEnabled);
+        proxy.DoCallback();
+        await callbackCounter.WaitForValue(1).Timeout(0.5);
+
+        // interception succeeded
+        callbackEnabled = false;
+        proxy.DoCallback();
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            callbackCounter.WaitForValue(2).Timeout(0.5));
+
+        // interception is paused
+        using (CallInterceptor.PauseInterception())
+        {
+            Assert.False(callbackEnabled);
+            proxy.DoCallback();
+            await callbackCounter.WaitForValue(2).Timeout(0.5);
+        }
+    }
+
+    [Fact]
+    public async Task AsyncCallInterception_works_for_Task()
+    {
+        var config = ConnConfig;
+        var callbackEnabled = true;
+        var callbackCounter = new AsyncCounter();
+
+        config.CallInterceptors.Add(
+            CallInterceptor.For<ICallbackService>().Func(
+            svc => svc.DoCallbackAsync(),
+            data =>
+            {
+                data.Intercepted = !callbackEnabled;
+                return Task.CompletedTask;
+            }));
+
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<ICallbackService, CallbackService>();
+        using var conn = new ZyanConnection(config);
+
+        var proxy = conn.CreateProxy<ICallbackService>();
+        proxy.RegisterCallback(() => callbackCounter.Increment());
+
+        // no interception
+        Assert.True(callbackEnabled);
+        await proxy.DoCallbackAsync();
+        await callbackCounter.WaitForValue(1).Timeout(0.5);
+
+        // interception succeeded
+        callbackEnabled = false;
+        await proxy.DoCallbackAsync();
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            callbackCounter.WaitForValue(2).Timeout(0.5));
+
+        // interception is paused
+        using (CallInterceptor.PauseInterception())
+        {
+            Assert.False(callbackEnabled);
+            await proxy.DoCallbackAsync();
+            await callbackCounter.WaitForValue(2).Timeout(0.5);
+        }
     }
 }

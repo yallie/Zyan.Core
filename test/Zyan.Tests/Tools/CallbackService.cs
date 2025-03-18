@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Zyan.Communication;
 
 namespace Zyan.Tests.Tools;
@@ -27,4 +28,7 @@ public class CallbackService : ICallbackService
             action?.Invoke();
         }
     }
+
+    public Task DoCallbackAsync() =>
+        Task.Run(DoCallback);
 }
