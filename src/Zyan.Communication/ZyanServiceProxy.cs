@@ -32,12 +32,6 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
     /// <param name="invocation">Intercepted invocation details</param>
     protected override void Intercept(IInvocation invocation)
     {
-        object MakeRemoteCall()
-        {
-            base.Intercept(invocation);
-            return invocation.ReturnValue;
-        }
-
         // handle call interception
         var cfg = Connection.Config;
         if (cfg.EnableCallInterception && cfg.CallInterceptors.Count > 0 && !CallInterceptor.IsPaused)
@@ -49,6 +43,12 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
 
             if (interceptor != null)
             {
+                object MakeRemoteCall()
+                {
+                    base.Intercept(invocation);
+                    return invocation.ReturnValue;
+                }
+
                 var data = new CallInterceptionData(ServiceName,
                     invocation.Arguments, MakeRemoteCall);
 
@@ -158,9 +158,6 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
         var cfg = Connection.Config;
         if (cfg.EnableCallInterception && cfg.CallInterceptors.Count > 0 && !CallInterceptor.IsPaused)
         {
-            var helper = new AsyncInvocationHelper(base.InterceptAsync, invocation);
-            var makeRemoteCall = helper.GetMakeRemoteCallFunction(invocation.Method.ReturnType);
-
             var interceptor = cfg.CallInterceptors.FindMatchingInterceptor(
                 ServiceInterfaceType, ServiceName,
                 invocation.Method.MemberType, invocation.Method.Name,
@@ -168,6 +165,9 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
 
             if (interceptor != null)
             {
+                var helper = new AsyncInvocationHelper(base.InterceptAsync, invocation);
+                var makeRemoteCall = helper.GetMakeRemoteCallFunction(invocation.Method.ReturnType);
+
                 var data = new CallInterceptionData(ServiceName,
                     invocation.Arguments.ToArray(), makeRemoteCall);
 
