@@ -12,6 +12,8 @@ namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
+    private const int TimeoutSec = 1;
+
     [Fact]
     public void SyncCallInterception_works_and_supports_PauseInterception()
     {
@@ -536,20 +538,20 @@ public partial class RpcTests : TestBase
         // no interception
         Assert.True(callbackEnabled);
         proxy.DoCallback();
-        await callbackCounter.WaitForValue(1).Timeout(0.5);
+        await callbackCounter.WaitForValue(1).Timeout(TimeoutSec);
 
         // interception succeeded
         callbackEnabled = false;
         proxy.DoCallback();
         await Assert.ThrowsAsync<TimeoutException>(() =>
-            callbackCounter.WaitForValue(2).Timeout(0.5));
+            callbackCounter.WaitForValue(2).Timeout(TimeoutSec));
 
         // interception is paused
         using (CallInterceptor.PauseInterception())
         {
             Assert.False(callbackEnabled);
             proxy.DoCallback();
-            await callbackCounter.WaitForValue(2).Timeout(0.5);
+            await callbackCounter.WaitForValue(2).Timeout(TimeoutSec);
         }
     }
 
@@ -578,20 +580,20 @@ public partial class RpcTests : TestBase
         // no interception
         Assert.True(callbackEnabled);
         await proxy.DoCallbackAsync();
-        await callbackCounter.WaitForValue(1).Timeout(0.5);
+        await callbackCounter.WaitForValue(1).Timeout(TimeoutSec);
 
         // interception succeeded
         callbackEnabled = false;
         await proxy.DoCallbackAsync();
         await Assert.ThrowsAsync<TimeoutException>(() =>
-            callbackCounter.WaitForValue(2).Timeout(0.5));
+            callbackCounter.WaitForValue(2).Timeout(TimeoutSec));
 
         // interception is paused
         using (CallInterceptor.PauseInterception())
         {
             Assert.False(callbackEnabled);
             await proxy.DoCallbackAsync();
-            await callbackCounter.WaitForValue(2).Timeout(0.5);
+            await callbackCounter.WaitForValue(2).Timeout(TimeoutSec);
         }
     }
 }

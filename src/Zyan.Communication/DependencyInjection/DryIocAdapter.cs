@@ -5,8 +5,10 @@ using CoreRemoting.DependencyInjection;
 using CoreRemoting.Toolbox;
 using DryIoc;
 using DryIoc.MefAttributedModel;
+using static CoreRemoting.DependencyInjection.ServiceLifetime;
 
 namespace Zyan.Communication.DependencyInjection;
+
 
 /// <summary>
 /// Dependency injection container based on DryIoc container implementation.
@@ -47,9 +49,9 @@ public class DryIocAdapter : DependencyInjectionContainerBase, IDependencyInject
 
     private static IReuse GetReuse(ServiceLifetime lifetime) => lifetime switch
     {
-        ServiceLifetime.SingleCall => Reuse.Transient,
-        ServiceLifetime.Singleton => Reuse.Singleton,
-        ServiceLifetime.Scoped => Reuse.ScopedOrSingleton,
+        SingleCall => Reuse.Transient,
+        Singleton => Reuse.Singleton,
+        Scoped => Reuse.ScopedOrSingleton,
         _ => throw new NotSupportedException($"Lifetime not supported: {lifetime}."),
     };
 
