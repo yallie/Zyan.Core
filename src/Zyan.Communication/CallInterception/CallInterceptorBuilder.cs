@@ -46,7 +46,7 @@ public class CallInterceptorBuilder<T>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptor Action(Expression<Action<T>> expression, CallInterceptionDelegate handler)
+    public CallInterceptor Action(Expression<Action<T>> expression, Action<CallInterceptionData> handler)
     {
         CheckNotNull(handler);
 

@@ -11,7 +11,7 @@ public class CallInterceptionData<T>
     public CallInterceptionData Data { get; private set; }
 
     /// <summary>
-    /// Gets or sets a value whether the remote call is intercepted.
+    /// Gets or sets a value indicating whether the remote call was intercepted.
     /// </summary>
     public bool Intercepted
     { 
@@ -34,10 +34,4 @@ public class CallInterceptionData<T>
     {
         Data = data,
     };
-
-    /// <summary>
-    /// Implicit conversion operator for <see cref="CallInterceptionData{T}"/>.
-    /// </summary>
-    public static implicit operator CallInterceptionData(CallInterceptionData<T> data) =>
-        data.Data;
 }

@@ -34,7 +34,7 @@ public class CallInterceptionData
     public string InvokerUniqueName { get; }
 
     /// <summary>
-    /// Gets or sets wether the call was intercepted.
+    /// Gets or sets a value indicating whether the call was intercepted.
     /// </summary>
     public bool Intercepted { get; set; }
 

@@ -42,7 +42,7 @@ public class CallInterceptorHelper<T> : IEnumerable<CallInterceptor>
     /// </summary>
     /// <param name="expression">LINQ expression of the method to intercept.</param>
     /// <param name="handler">Interception handler.</param>
-    public CallInterceptorHelper<T> Add(Expression<Action<T>> expression, CallInterceptionDelegate handler)
+    public CallInterceptorHelper<T> Add(Expression<Action<T>> expression, Action<CallInterceptionData> handler)
     {
         CheckNotNull(handler);
 

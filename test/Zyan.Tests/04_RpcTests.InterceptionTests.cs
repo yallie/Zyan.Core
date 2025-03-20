@@ -554,7 +554,7 @@ public partial class RpcTests : TestBase
     }
 
     [Fact]
-    public async Task AsyncCallInterception_works_for_Task()
+    public async  Task AsyncCallInterception_works_for_Task()
     {
         var config = ConnConfig;
         var callbackEnabled = true;

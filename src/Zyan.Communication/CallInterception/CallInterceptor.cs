@@ -8,12 +8,6 @@ using CoreRemoting.Toolbox;
 namespace Zyan.Communication.CallInterception;
 
 /// <summary>
-/// Delegate to call custom call interception logic.
-/// </summary>
-/// <param name="action">Interception action details</param>
-public delegate void CallInterceptionDelegate(CallInterceptionData action);
-
-/// <summary>
 /// General implementation of a call interception device.
 /// </summary>
 public class CallInterceptor
@@ -26,15 +20,15 @@ public class CallInterceptor
     /// <param name="memberType">Type of the intercepted member</param>
     /// <param name="memberName">Name of the intercepted member</param>
     /// <param name="parameterTypes">Types of parameters for the intercepted member</param>
-    /// <param name="onInterception">Callback for custom call interception logic</param>
-    public CallInterceptor(Type interfaceType, string uniqueName, MemberTypes memberType, string memberName, Type[] parameterTypes, CallInterceptionDelegate onInterception)
+    /// <param name="interceptionHandler">Callback for custom call interception logic</param>
+    public CallInterceptor(Type interfaceType, string uniqueName, MemberTypes memberType, string memberName, Type[] parameterTypes, Action<CallInterceptionData> interceptionHandler)
     {
         InterfaceType = interfaceType;
         UniqueNameFilter = string.IsNullOrEmpty(uniqueName) ? Regex.Escape(interfaceType.FullName) : uniqueName;
         MemberType = memberType;
         MemberName = memberName;
         ParameterTypes = parameterTypes;
-        OnInterception = onInterception;
+        InterceptionHandler = interceptionHandler;
         Enabled = true;
     }
 
@@ -46,7 +40,7 @@ public class CallInterceptor
     /// <param name="memberName">Name of the intercepted member</param>
     /// <param name="parameterTypes">Types of parameters for the intercepted member</param>
     /// <param name="onInterception">Callback for custom call interception logic</param>
-    public CallInterceptor(Type interfaceType, MemberTypes memberType, string memberName, Type[] parameterTypes, CallInterceptionDelegate onInterception)
+    public CallInterceptor(Type interfaceType, MemberTypes memberType, string memberName, Type[] parameterTypes, Action<CallInterceptionData> onInterception)
         : this(interfaceType, null, memberType, memberName, parameterTypes, onInterception)
     {
     }
@@ -95,7 +89,7 @@ public class CallInterceptor
     /// <summary>
     /// Get a callback for custom call interception logic
     /// </summary>
-    public CallInterceptionDelegate OnInterception { get; private set; }
+    public Action<CallInterceptionData> InterceptionHandler { get; private set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this <see cref="CallInterceptor"/> is enabled.

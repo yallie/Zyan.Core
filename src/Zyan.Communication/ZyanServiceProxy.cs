@@ -61,7 +61,7 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
                 var data = new CallInterceptionData(ServiceName,
                     invocation.Arguments, MakeRemoteCall);
 
-                interceptor.OnInterception(data);
+                interceptor.InterceptionHandler(data);
                 if (data.Intercepted)
                 {
                     invocation.ReturnValue = data.ReturnValue;
@@ -195,7 +195,7 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
                 var data = new CallInterceptionData(ServiceName,
                     invocation.Arguments.ToArray(), makeRemoteCall);
 
-                interceptor.OnInterception(data);
+                interceptor.InterceptionHandler(data);
                 if (data.Intercepted)
                 {
                     invocation.Result = await helper.GetTaskResult(data.ReturnValue);
