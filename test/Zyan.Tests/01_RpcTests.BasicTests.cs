@@ -61,6 +61,25 @@ public partial class RpcTests : TestBase
     }
 
     [Fact]
+    public async Task ReconnectTest()
+    {
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = await proxy.HelloAsync("Hello");
+        Assert.Equal("Hello World!", result);
+
+        conn.Disconnect();
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        conn.Connect();
+
+        result = await proxy.HelloAsync("Goodbye");
+        Assert.Equal("Goodbye World!", result);
+    }
+
+    [Fact]
     public void NonSerializableExceptionTest()
     {
         using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
