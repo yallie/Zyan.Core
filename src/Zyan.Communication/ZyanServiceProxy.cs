@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using CoreRemoting;
+using CoreRemoting.RpcMessaging;
 using stakx.DynamicProxy;
 using Zyan.Communication.CallInterception;
 using Zyan.Communication.Toolbox;
+using Zyan.InterLinq;
 
 namespace Zyan.Communication;
 
@@ -34,6 +38,9 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
     protected override void Intercept(IInvocation invocation)
     {
         if (HandleCallInterception(invocation))
+            return;
+
+        if (HandleLinqQuery(invocation))
             return;
 
         base.Intercept(invocation);
@@ -72,6 +79,27 @@ internal class ZyanServiceProxy<T> : ServiceProxy<T>
 
         // interception disabled, interceptor not found,
         // or the handler didn't intercept the invocation
+        return false;
+    }
+
+    private bool HandleLinqQuery(IInvocation invocation)
+    {
+        // handle remote LINQ query
+        var methodInfo = invocation.Method;
+        if (methodInfo.GetParameters().Length == 0 &&
+            methodInfo.GetGenericArguments().Length == 1 &&
+            methodInfo.ReturnType.IsGenericType &&
+            methodInfo.ReturnType.GetGenericTypeDefinition() is Type returnTypeDef &&
+            (returnTypeDef == typeof(IEnumerable<>) || returnTypeDef == typeof(IQueryable<>)))
+        {
+            var elementType = methodInfo.GetGenericArguments().First();
+            var serverHandlerName = ZyanMethodQueryHandler.GetMethodQueryHandlerName(ServiceName, methodInfo);
+            var clientHandler = new ZyanClientQueryHandler(Connection, serverHandlerName);
+            invocation.ReturnValue = clientHandler.Get(elementType);
+            return true;
+        }
+
+        // This method call doesn't represent a LINQ query
         return false;
     }
 

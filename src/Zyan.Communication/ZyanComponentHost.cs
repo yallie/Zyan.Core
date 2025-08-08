@@ -76,12 +76,60 @@ public partial class ZyanComponentHost : IDisposable
     /// <typeparam name="TInterface">Component interface type</typeparam>
     /// <typeparam name="TService">Component implementation type</typeparam>
     /// <param name="serviceLifetime">Optional component lifetime</param>
+    /// <param name="uniqueName">Optional unique name</param>
     public ZyanComponentHost RegisterComponent<TInterface, TService>(ServiceLifetime serviceLifetime = ServiceLifetime.Scoped, string uniqueName = "")
         where TInterface : class
         where TService : class, TInterface, new()
     {
         Container.RegisterService<TInterface, TService>(serviceLifetime, uniqueName);
         Container.RegisterQueryableMethods<TInterface, TService>(serviceLifetime, uniqueName);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a singleton component instance in the component catalog.
+    /// </summary>
+    /// <typeparam name="TInterface">Component interface type</typeparam>
+    /// <typeparam name="TService">Component implementation type</typeparam>
+    /// <param name="uniqueName">Component unique name</param>
+    /// <param name="serviceInstance">Component instance</param>
+    public ZyanComponentHost RegisterComponent<TInterface, TService>(string uniqueName)
+        where TInterface : class
+        where TService : class, TInterface, new()
+    {
+        Container.RegisterService<TInterface, TService>(ServiceLifetime.SingleCall, uniqueName);
+        Container.RegisterQueryableMethods<TInterface, TService>(ServiceLifetime.SingleCall, uniqueName);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a singleton component instance in the component catalog.
+    /// </summary>
+    /// <typeparam name="TInterface">Component interface type</typeparam>
+    /// <typeparam name="TService">Component implementation type</typeparam>
+    /// <param name="uniqueName">Component unique name</param>
+    /// <param name="serviceInstance">Component instance</param>
+    public ZyanComponentHost RegisterComponent<TInterface, TService>(string uniqueName, TService serviceInstance)
+        where TInterface : class
+        where TService : class, TInterface, new()
+    {
+        Container.RegisterService<TInterface>(() => serviceInstance, ServiceLifetime.Singleton, uniqueName);
+        Container.RegisterQueryableMethods<TInterface, TService>(ServiceLifetime.SingleCall, uniqueName);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a singleton component instance in the component catalog.
+    /// </summary>
+    /// <typeparam name="TInterface">Component interface type</typeparam>
+    /// <typeparam name="TService">Component implementation type</typeparam>
+    /// <param name="serviceInstance">Component instance</param>
+    public ZyanComponentHost RegisterComponent<TInterface, TService>(TService serviceInstance)
+        where TInterface : class
+        where TService : class, TInterface, new()
+    {
+        Container.RegisterService<TInterface>(() => serviceInstance, ServiceLifetime.Singleton, "");
+        Container.RegisterQueryableMethods<TInterface, TService>(ServiceLifetime.SingleCall, "");
         return this;
     }
 }

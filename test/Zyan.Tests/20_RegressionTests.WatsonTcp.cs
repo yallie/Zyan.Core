@@ -27,7 +27,7 @@ public partial class RegressionTests : TestBase
         server.Dispose();
     }
 
-    // [Test] // https://github.com/dotnet/WatsonTcp/issues/316
+    // [Test] // https://github.com/dotnet/WatsonTcp/issues/316, still fails
     public void WatsonTcpServerSecondDisposalThrowsNullReferenceException()
     {
         var server = new WatsonTcpServer("127.0.0.1", TestPort);
