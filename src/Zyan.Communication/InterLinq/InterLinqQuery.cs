@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using Zyan.InterLinq.Types;
 
 namespace Zyan.InterLinq
@@ -13,6 +14,7 @@ namespace Zyan.InterLinq
 	/// </summary>
 	[Serializable]
 	[DataContract]
+	[JsonObject]
 	public abstract class InterLinqQueryBase
 	{
 		#region Properties
@@ -59,6 +61,7 @@ namespace Zyan.InterLinq
 	/// <seealso cref="InterLinqQueryBase"/>
 	[Serializable]
 	[DataContract]
+	[JsonObject]
 	public class InterLinqQuery<T> : InterLinqQueryBase, IOrderedQueryable<T>
 	{
 		#region Fields
@@ -71,6 +74,13 @@ namespace Zyan.InterLinq
 		#endregion
 
 		#region Constructors
+
+		/// <summary>
+		/// Required for Newtonsoft.Json.
+		/// </summary>
+		public InterLinqQuery()
+		{
+		}
 
 		/// <summary>
 		/// Initializes this Query with the arguments.

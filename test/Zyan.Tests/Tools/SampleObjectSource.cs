@@ -8,16 +8,19 @@ namespace Zyan.Tests.Tools;
 /// </summary>
 public class SampleObjectSource : IObjectSource
 {
-    IEnumerable<string> Strings { get; set; }
+    IEnumerable<string> Strings { get; set; } =
+        ["quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
 
     public SampleObjectSource()
-    { 
-        Strings = ["quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
+    {
     }
 
     public SampleObjectSource(string[] strings)
     {
-        Strings = strings;
+        if (strings.Length > 0)
+        {
+            Strings = strings;
+        }
     }
 
     public IEnumerable<T> Get<T>() where T : class
