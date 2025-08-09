@@ -104,7 +104,7 @@ namespace Zyan.InterLinq.Types
 				return false;
 			}
 			InterLinqPropertyInfo other = (InterLinqPropertyInfo)obj;
-			return PropertyType.Equals(other.PropertyType);
+			return Equals(PropertyType, other.PropertyType);
 		}
 
 		/// <summary>

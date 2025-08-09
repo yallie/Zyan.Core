@@ -76,7 +76,9 @@ namespace Zyan.InterLinq.Types
 				}
 				return constructor.Invoke(properties.ToArray());
 			}
-			return objectToConvert;
+			if (objectToConvert == null || objectToConvert.GetType() == wantedType || objectToConvert is not IConvertible)
+				return objectToConvert;
+			return Convert.ChangeType(objectToConvert, wantedType);
 		}
 
 		private static object ConvertFromInterLinqGrouping<TKey, TElement>(Type wantedType, InterLinqGrouping<TKey, TElement> grouping)

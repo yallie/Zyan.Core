@@ -80,7 +80,8 @@ namespace Zyan.InterLinq.Expressions.Helpers
 		{
 			if (expression.Value != null)
 			{
-				return Expression.Constant(expression.Value, expression.Type.RepresentedType);
+				var expressionValue = Convert.ChangeType(expression.Value, expression.Type.RepresentedType);
+				return Expression.Constant(expressionValue, expression.Type.RepresentedType);
 			}
 			return Expression.Constant(null, (Type)expression.Type.GetClrVersion());
 		}

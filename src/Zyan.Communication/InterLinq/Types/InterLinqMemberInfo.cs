@@ -85,7 +85,7 @@ namespace Zyan.InterLinq.Types
 				return false;
 			}
 			InterLinqMemberInfo other = (InterLinqMemberInfo)obj;
-			return MemberType == other.MemberType && Name == other.Name && DeclaringType.Equals(other.DeclaringType);
+			return MemberType == other.MemberType && Name == other.Name && Equals(DeclaringType, other.DeclaringType);
 		}
 
 		/// <summary>

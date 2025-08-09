@@ -66,7 +66,7 @@ namespace Zyan.InterLinq.Types.Anonymous
 			}
 
 			AnonymousMetaProperty other = (AnonymousMetaProperty)obj;
-			return other.Name == Name && other.PropertyType.Equals(PropertyType);
+			return other.Name == Name && Equals(other.PropertyType, PropertyType);
 		}
 
 		/// <summary>

@@ -192,7 +192,7 @@ namespace Zyan.InterLinq.Types
 				}
 			}
 
-			return ReturnType.Equals(other.ReturnType);
+			return Equals(ReturnType, other.ReturnType);
 		}
 
 		/// <summary>
