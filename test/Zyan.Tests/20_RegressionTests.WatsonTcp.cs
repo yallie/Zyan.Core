@@ -28,7 +28,7 @@ public partial class RegressionTests : TestBase
     }
 
     // [Test] // https://github.com/dotnet/WatsonTcp/issues/316, still fails
-    public void WatsonTcpServerSecondDisposalThrowsNullReferenceException()
+    private void WatsonTcpServerSecondDisposalThrowsNullReferenceException()
     {
         var server = new WatsonTcpServer("127.0.0.1", TestPort);
 
@@ -37,7 +37,7 @@ public partial class RegressionTests : TestBase
     }
 
     // [Test] // https://github.com/dotnet/WatsonTcp/issues/303
-    public async Task WatsonTcpServerAndClientInstantDisposal()
+    private async Task WatsonTcpServerAndClientInstantDisposal()
     {
         // doesn't reproduce locally, but quite often fails on CI
         var server = new WatsonTcpServer("127.0.0.1", TestPort);
