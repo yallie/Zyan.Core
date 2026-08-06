@@ -97,9 +97,11 @@ public partial class RpcTests : TestBase
         {
             Assert.Equal("NonSerializable", sx.SourceTypeName);
             Assert.Equal("Hello", ex.Message);
+            Assert.NotNull(ex.StackTrace);
+
+            // note: looks like Data serialization doesn't work in Bson
             Assert.Equal("Serializable", ex.Data["Serializable"]);
             Assert.Equal("World", ex.Data["World"]);
-            Assert.NotNull(ex.StackTrace);
         }
     }
 

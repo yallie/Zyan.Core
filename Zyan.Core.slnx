@@ -1,0 +1,17 @@
+<Solution>
+
+  <Folder Name="/CoreRemoting/">
+    <Project Path="modules/CoreRemoting/CoreRemoting/CoreRemoting.csproj" />
+    <Project Path="modules/CoreRemoting/CoreRemoting.Serialization.Binary/CoreRemoting.Serialization.Binary.csproj" />
+  </Folder>
+
+  <Folder Name="/Samples/">
+    <Project Path="samples/ConsoleClientServer/Zyan.Samples.ConsoleClientServer.csproj" />
+    <Project Path="samples/ConsoleEvents/Zyan.Samples.ConsoleEvents.csproj" />
+    <Project Path="samples/DelegateParameters/Zyan.Samples.DelegateParameters.csproj" />
+  </Folder>
+
+  <Project Path="src/Zyan.Communication/Zyan.Communication.csproj" />
+  <Project Path="test/Zyan.Tests/Zyan.Tests.csproj" />
+
+</Solution>

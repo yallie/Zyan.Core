@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\modules\CoreRemoting\CoreRemoting\CoreRemoting.csproj" />
+    <ProjectReference Include="..\..\modules\CoreRemoting\CoreRemoting.Serialization.Binary\CoreRemoting.Serialization.Binary.csproj" />
   </ItemGroup>
 
 </Project>
