@@ -26,23 +26,27 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
     private ISessionRepository SessionRepository { get; set; }
 
     /// <inheritdoc/>
-    public int KeySize => SessionRepository.KeySize;
-
-    /// <inheritdoc/>
     public IEnumerable<RemotingSession> Sessions => SessionRepository.Sessions;
 
     /// <inheritdoc/>
-    public RemotingSession CreateSession(byte[] clientPublicKey, string clientAddress, IRemotingServer server, IRawMessageTransport rawMessageTransport)
+    public async Task<RemotingSession> CreateSession(byte[] clientPublicKey, string clientAddress, IRemotingServer server, IRawMessageTransport rawMessageTransport)
     {
-        var rs = SessionRepository.CreateSession(clientPublicKey, clientAddress, server, rawMessageTransport);
+        var rs = await SessionRepository.CreateSession(clientPublicKey, clientAddress, server, rawMessageTransport);
         var ss = new ServerSession(rs, server, this);
         ServerSessions[ss.SessionID] = ss;
         return rs;
     }
 
     /// <inheritdoc/>
-    public RemotingSession GetSession(Guid sessionId) =>
-        SessionRepository.GetSession(sessionId);
+    public async Task<RemotingSession> TryResumeSession(Guid sessionId, byte[] clientPublicKey, IRawMessageTransport rawMessageTransport)
+    {
+        var rs = await SessionRepository.TryResumeSession(sessionId, clientPublicKey, rawMessageTransport);
+
+        // if exists, it should already be there?
+        // var ss = new ServerSession(rs, server, this);
+        // ServerSessions[ss.SessionID] = ss;
+        return rs;
+    }
 
     /// <inheritdoc/>
     async Task ISessionRepository.RemoveSession(Guid sessionId)
@@ -125,4 +129,5 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
     /// <inheritdoc/>
     public void SetSessionVariable(Guid sessionId, string name, object value) =>
         GetSessionVars(sessionId)[name] = value;
+
 }

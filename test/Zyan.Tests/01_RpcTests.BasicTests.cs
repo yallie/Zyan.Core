@@ -106,11 +106,12 @@ public partial class RpcTests : TestBase
     }
 
     [Fact]
-    public void Certain_services_can_be_excluded_from_authentication()
+    public void Certain_services_can_be_excluded_from_authentication_in_legacy_mode()
     {
         var hostConfig = HostConfig;
         hostConfig.AuthenticationRequired = true;
         hostConfig.AuthenticationProvider = new FakeAuthProvider(c => true);
+        hostConfig.UseLegacySessionKeyDerivation = true;
 
         // authenticated client
         var connConfig1 = ConnConfig;
