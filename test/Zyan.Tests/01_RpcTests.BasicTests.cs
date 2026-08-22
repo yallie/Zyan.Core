@@ -111,6 +111,9 @@ public partial class RpcTests : TestBase
         var hostConfig = HostConfig;
         hostConfig.AuthenticationRequired = true;
         hostConfig.AuthenticationProvider = new FakeAuthProvider(c => true);
+
+        // enables legacy client.Connect without credentials
+        // even if server's AuthenticationRequired is true
         hostConfig.UseLegacySessionKeyDerivation = true;
 
         // authenticated client
