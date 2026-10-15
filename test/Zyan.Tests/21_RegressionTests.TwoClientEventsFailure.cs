@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using CoreRemoting.Channels.Websocket;
+using CoreRemoting.DependencyInjection;
 using CoreRemoting.Threading;
 using Xunit;
 using Zyan.Communication;
+using Zyan.Communication.DependencyInjection;
 using Zyan.Tests.Tools;
 
 namespace Zyan.Tests;
@@ -55,5 +57,14 @@ public partial class RegressionTests : TestBase
 
         Assert.False(cnt1.Value > 0);
         Assert.True(cnt2.Value > 0);
+    }
+
+    [Fact]
+    public void DryIocAdapter_can_resolve_itself()
+    {
+        var c = new DryIocAdapter();
+        var self = c.GetService<IDependencyInjectionContainer>();
+        Assert.Same(c, self);
+        Assert.True(c.IsRegistered<IDependencyInjectionContainer>());
     }
 }

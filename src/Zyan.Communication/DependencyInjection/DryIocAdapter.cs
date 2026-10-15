@@ -9,7 +9,6 @@ using static CoreRemoting.DependencyInjection.ServiceLifetime;
 
 namespace Zyan.Communication.DependencyInjection;
 
-
 /// <summary>
 /// Dependency injection container based on DryIoc container implementation.
 /// </summary>
@@ -38,7 +37,7 @@ public class DryIocAdapter : DependencyInjectionContainerBase, IDependencyInject
     public override IEnumerable<Type> GetAllRegisteredTypes() => []; // TODO
 
     public override bool IsRegistered<TServiceInterface>(string serviceName = "") =>
-        RootContainer.IsRegistered<TServiceInterface>(serviceName);
+        RootContainer.IsRegistered<TServiceInterface>(GetKey<TServiceInterface>(serviceName));
 
     private static object GetKey<TServiceInterface>(string serviceName) =>
         GetKey(typeof(TServiceInterface), serviceName);
