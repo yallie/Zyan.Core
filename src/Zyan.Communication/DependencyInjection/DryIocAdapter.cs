@@ -64,7 +64,7 @@ public class DryIocAdapter : DependencyInjectionContainerBase, IDependencyInject
     {
         var service = Container.Resolve(registration.InterfaceType ?? registration.ImplementationType,
             serviceKey: GetKey(registration.InterfaceType ?? registration.ImplementationType, registration.ServiceName));
-        registration.EventStub.WireTo(service);
+        registration.EventHub.WireTo(service);
         return service;
     }
 
