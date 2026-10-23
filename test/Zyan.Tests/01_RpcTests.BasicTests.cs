@@ -176,4 +176,15 @@ public partial class RpcTests : TestBase
         Assert.NotNull(ex);
         Assert.Equal("Translated!", ex.Message);
     }
+
+    [Fact]
+    public async Task AsyncValueTaskRpcTest()
+    {
+        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
+        using var conn = new ZyanConnection(ConnConfig);
+
+        var proxy = conn.CreateProxy<IHelloServer>();
+        var result = await proxy.HelloValueTaskAsync("Hello");
+        Assert.Equal("Hello World!", result);
+    }
 }

@@ -8,17 +8,6 @@ namespace Zyan.Tests;
 
 public partial class RpcTests : TestBase
 {
-    // [Fact] ValueTask<T> return type is not supported
-    internal async Task AsyncValueTaskRpcTest()
-    {
-        using var host = new ZyanComponentHost(HostConfig).RegisterComponent<IHelloServer, HelloServer>();
-        using var conn = new ZyanConnection(ConnConfig);
-
-        var proxy = conn.CreateProxy<IHelloServer>();
-        var result = await proxy.HelloValueTaskAsync("Hello");
-        Assert.Equal("Hello World!", result);
-    }
-
     // [Fact] // Fails: two channels try to listen on the same port
     internal async Task SameHostConfig()
     {
