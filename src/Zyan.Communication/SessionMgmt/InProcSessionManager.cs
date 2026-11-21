@@ -38,9 +38,9 @@ public class InProcSessionManager : ISessionManager, ISessionRepository
     }
 
     /// <inheritdoc/>
-    public async Task<RemotingSession> TryResumeSession(Guid sessionId, byte[] sessionSignature, byte[] clientPublicKey, IRawMessageTransport rawMessageTransport)
+    public async Task<RemotingSession> TryResumeSession(Guid sessionId, byte[] sessionSignature, byte[] clientPublicKey, IRemotingServer server, IRawMessageTransport rawMessageTransport)
     {
-        var rs = await SessionRepository.TryResumeSession(sessionId, sessionSignature, clientPublicKey, rawMessageTransport);
+        var rs = await SessionRepository.TryResumeSession(sessionId, sessionSignature, clientPublicKey, server, rawMessageTransport);
 
         // if exists, it should already be there?
         // var ss = new ServerSession(rs, server, this);
